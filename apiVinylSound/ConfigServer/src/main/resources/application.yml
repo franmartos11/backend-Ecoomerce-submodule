@@ -8,6 +8,6 @@ spring:
     config:
       server:
         git:
-          uri:
+          uri: https://github.com/burgosfacundo/ConfigServer-PI2
           default-label: main
           force-pull: true

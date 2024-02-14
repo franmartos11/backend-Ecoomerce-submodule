@@ -9,24 +9,36 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.grupo5.vinylSound.ConfigServer</groupId>
-    <artifactId>ConfigServer</artifactId>
+    <groupId>com.grupo5.vinylSound.apiGateway</groupId>
+    <artifactId>eurekaServer</artifactId>
     <version>0.0.1</version>
-    <name>ConfigServer</name>
+    <name>eurekaServer</name>
 
     <properties>
         <java.version>17</java.version>
         <spring-cloud.version>2021.0.5</spring-cloud.version>
     </properties>
+
     <dependencies>
         <!-- Spring Cloud-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-config-server</artifactId>
+            <artifactId>spring-cloud-starter-config</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter</artifactId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+        </dependency>
+        <!-- -->
+
+        <!-- Extra -->
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
         </dependency>
         <!-- -->
 

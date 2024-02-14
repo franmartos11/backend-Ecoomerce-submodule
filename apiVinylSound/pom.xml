@@ -23,5 +23,7 @@
     <modules>
         <module>catalogo</module>
         <module>ConfigServer</module>
+        <module>eurekaServer</module>
+        <module>apiGateway</module>
     </modules>
 </project>
