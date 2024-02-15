@@ -1,0 +1,28 @@
+version: "1"
+
+services:
+  db:
+    container_name: db
+    image: mysql:8
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: vinilSound
+      MYSQL_DATABASE: vinilSound
+      MYSQL_USER: user-vinilSound
+      MYSQL_PASSWORD: pass-vinilSound
+      MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL: "true"
+    healthcheck:
+      test: "mysql -uuser-vinilSound -ppass-vinilSound -e 'SELECT 1;'"
+      interval: 30s
+      retries: 5
+    volumes:
+      - mysql_data_volume:/var/lib/mysql
+    networks:
+      - vinilSound
+
+volumes:
+  mysql_data_volume:
+networks:
+  vinilSound:
+    driver: bridge

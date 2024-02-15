@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.grupo5.vinylSound.apiGateway</groupId>
+    <groupId>com.grupo5.vinylSound.eurekaServer</groupId>
     <artifactId>eurekaServer</artifactId>
     <version>0.0.1</version>
     <name>eurekaServer</name>
