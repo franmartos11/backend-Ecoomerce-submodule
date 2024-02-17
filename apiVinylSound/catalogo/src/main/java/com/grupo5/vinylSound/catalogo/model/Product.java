@@ -21,9 +21,6 @@ public class Product {
     @Column(nullable = false,length = 150,unique = true)
     private String title;
 
-    @Column(nullable = false,length = 150)
-    private String brand;
-
     @Column(nullable = false)
     private Float price;
 
@@ -39,4 +36,8 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "id_subcategory")
     private SubCategory subcategory;
+
+    @ManyToOne
+    @JoinColumn(name = "id_brand")
+    private Brand brand;
 }
