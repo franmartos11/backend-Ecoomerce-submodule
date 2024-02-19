@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RequiredArgsConstructor
-@CrossOrigin
 @RestController
+@CrossOrigin
 @RequestMapping("/catalogo/subcategory")
 public class SubCategoryController {
     private final SubCategoryService service;

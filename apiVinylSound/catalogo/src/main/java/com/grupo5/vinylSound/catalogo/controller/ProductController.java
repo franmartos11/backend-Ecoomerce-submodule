@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
+@CrossOrigin
 @RequestMapping("/catalogo/product")
 public class ProductController {
     private final ProductService service;
