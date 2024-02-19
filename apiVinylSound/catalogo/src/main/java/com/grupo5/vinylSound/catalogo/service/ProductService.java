@@ -94,6 +94,25 @@ public class ProductService {
         return mapToDTO(optionalProduct.get());
     }
 
+    public Page<ProductResponseDTO> getAllFav(PageRequestDTO dto){
+        var products = repository.findAllFav();
+        if (products.isEmpty()) {
+            return Page.empty();
+        }
+
+        List<ProductResponseDTO> listDTO = new ArrayList<>();
+        for (Product product : products) {
+            listDTO.add(mapToDTO(product));
+        }
+
+        var holder = new PagedListHolder<>(listDTO);
+        holder.setPage(dto.getPage());
+        holder.setPageSize(dto.getSize());
+        var slice = holder.getPageList();
+
+        return new PageImpl<>(slice,new PageRequestDTO().getPageable(dto),listDTO.size());
+    }
+
     public Page<ProductResponseDTO> filterByCategory(PageRequestDTO pageRequestDTO, Long idCategory) throws NotFoundException {
         var category = categoryRepository.findById(idCategory);
         if (category.isEmpty()){

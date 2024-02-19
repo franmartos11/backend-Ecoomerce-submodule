@@ -45,6 +45,14 @@ public class ProductController {
         return ResponseEntity.ok(service.getByTitle(title));
     }
 
+    @GetMapping("/allfav")
+    public ResponseEntity<Page<ProductResponseDTO>> getAllFav(@RequestParam("page") Integer page,
+                                                           @RequestParam("size") Integer size,
+                                                           @RequestParam("sort") Sort.Direction sort,
+                                                           @RequestParam("column") String column) {
+        return ResponseEntity.ok(service.getAllFav(new PageRequestDTO(page,size,sort,column)));
+    }
+
     @GetMapping("/category={categoryId}")
     public ResponseEntity<Page<ProductResponseDTO>> filterByCategory(@RequestParam("page") Integer page,
                                                                                @RequestParam("size") Integer size,
