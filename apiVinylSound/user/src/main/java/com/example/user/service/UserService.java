@@ -1,23 +1,24 @@
 package com.example.user.service;
 
-import com.example.user.domain.User;
-import com.example.user.repository.KeycloakUserRepository;
+import com.example.user.exception.NotFoundException;
+import com.example.user.model.User;
+import com.example.user.repository.ProductRepository;
+import com.example.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
+@RequiredArgsConstructor
 public class UserService {
+    private final UserRepository userRepository;
+    private final ProductRepository productRepository;
 
-    private KeycloakUserRepository userRepository;
-
-    public UserService(KeycloakUserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    public Optional<User> findById(String id) {
+    public User getById(String id) throws NotFoundException {
         var user = userRepository.findById(id);
-        return user;
+        if (user.isEmpty()){
+            throw new NotFoundException("No hay registro de usuario con el id: " + id);
+        }
+        return user.get();
     }
 
 }

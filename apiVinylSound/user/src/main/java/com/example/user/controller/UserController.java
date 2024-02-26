@@ -1,30 +1,25 @@
 package com.example.user.controller;
 
-import com.example.user.domain.User;
+import com.example.user.exception.NotFoundException;
+import com.example.user.model.User;
 import com.example.user.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 
+@RequiredArgsConstructor
 @RestController
-@RequestMapping("/users")
+@CrossOrigin
+@RequestMapping("/user")
 public class UserController {
-    private UserService service;
+    private final UserService service;
 
-    public UserController(UserService service) {this.service = service;}
-
-    @GetMapping("/find/{id}")
-    public ResponseEntity<User> findById(@PathVariable String id){
-        Optional<User> foundUser = service.findById(id);
-        if(foundUser.isPresent()){
-        return ResponseEntity.ok(foundUser.get());
-        } else{
-            return ResponseEntity.notFound().build();
-        }
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_USER')")
+    public ResponseEntity<User> findById(@PathVariable String id) throws NotFoundException {
+        return ResponseEntity.ok(service.getById(id));
     }
 
 }
