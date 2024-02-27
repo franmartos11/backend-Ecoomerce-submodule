@@ -1,5 +1,6 @@
 package com.grupo5.vinylSound.apiGateway.config.security;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -8,12 +9,10 @@ import org.springframework.security.oauth2.client.registration.ReactiveClientReg
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.logout.ServerLogoutSuccessHandler;
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
-    private final ReactiveClientRegistrationRepository reactiveClientRegistrationRepository;
 
-    public SecurityConfig(ReactiveClientRegistrationRepository reactiveClientRegistrationRepository) {
-        this.reactiveClientRegistrationRepository = reactiveClientRegistrationRepository;
-    }
+    private final ReactiveClientRegistrationRepository reactiveClientRegistrationRepository;
 
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain (ServerHttpSecurity http) {

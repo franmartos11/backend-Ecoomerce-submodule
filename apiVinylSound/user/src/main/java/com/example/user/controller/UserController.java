@@ -17,7 +17,7 @@ public class UserController {
     private final UserService service;
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_admin','ROLE_user')")
     public ResponseEntity<User> findById(@PathVariable String id) throws NotFoundException {
         return ResponseEntity.ok(service.getById(id));
     }

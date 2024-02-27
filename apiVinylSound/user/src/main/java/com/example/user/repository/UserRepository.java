@@ -7,10 +7,10 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Repository;
 import org.keycloak.admin.client.Keycloak;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -26,8 +26,11 @@ public class UserRepository {
     }
 
     public boolean save(User user){
-        keycloakClient.realm(realm).users().create(mapToRepresentation(user));
-
+        try {
+            keycloakClient.realm(realm).users().create(mapToRepresentation(user));
+        }catch (Exception e){
+            throw new BadRequestException();
+        }
         return true;
     }
 
@@ -58,7 +61,19 @@ public class UserRepository {
 
     private UserRepresentation mapToRepresentation(User user) {
         var representation = new UserRepresentation();
+
+        Map<String, List<String>> attributes = new HashMap<>();
+        attributes.put("city", Collections.singletonList(user.getCity()));
+        attributes.put("postalCode", Collections.singletonList(user.getPostalCode()));
+        attributes.put("address", Collections.singletonList(user.getAddress()));
+
+        representation.setFirstName(user.getName());
+        representation.setLastName(user.getLastName());
+        representation.setEmail(user.getEmail());
+        representation.setAttributes(attributes);
+
         return representation;
     }
+
 
 }
