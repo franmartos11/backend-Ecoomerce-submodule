@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import lombok.NoArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,6 +18,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@NoArgsConstructor
 public class KeyCloakJwtConverter implements Converter<Jwt, AbstractAuthenticationToken> {
     private final JwtGrantedAuthoritiesConverter defaultGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
 
@@ -24,29 +26,15 @@ public class KeyCloakJwtConverter implements Converter<Jwt, AbstractAuthenticati
         Set<GrantedAuthority> resourcesRoles = new HashSet<>();
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
+
         resourcesRoles
-                .addAll(extractRoles(objectMapper
-                        .readTree(objectMapper.writeValueAsString(jwt))
-                        .get("claims")));
-        resourcesRoles
-                .addAll(extractRolesRealmAccess(objectMapper
-                        .readTree(objectMapper.writeValueAsString(jwt))
-                        .get("claims")));
+                .addAll(extractRolesRealmAccess(
+                        objectMapper
+                                .readTree(objectMapper.writeValueAsString(jwt))
+                                .get("claims")));
         return resourcesRoles;
     }
 
-
-    private static List<GrantedAuthority> extractRoles(JsonNode jwt) {
-        Set<String> rolesWithPrefix = new HashSet<>();
-
-        jwt.path("resource_access")
-                .elements()
-                .forEachRemaining(e -> e.path("roles")
-                        .elements()
-                        .forEachRemaining(r -> rolesWithPrefix.add("ROLE_" + r.asText())));
-
-        return AuthorityUtils.createAuthorityList(rolesWithPrefix.toArray(new String[0]));
-    }
     private static List<GrantedAuthority> extractRolesRealmAccess(JsonNode jwt) {
         Set<String> rolesWithPrefix = new HashSet<>();
 

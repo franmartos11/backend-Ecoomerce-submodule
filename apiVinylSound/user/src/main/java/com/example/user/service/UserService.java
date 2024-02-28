@@ -15,10 +15,12 @@ public class UserService {
 
     public User getById(String id) throws NotFoundException {
         var user = userRepository.findById(id);
+        var products = productRepository.findAll();
 
         if (user.isEmpty()){
             throw new NotFoundException("No hay registro de usuario con el id: " + id);
         }
+        user.get().setProductsFav(products);
         return user.get();
     }
 

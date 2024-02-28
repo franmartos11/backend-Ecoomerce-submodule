@@ -38,7 +38,7 @@ services:
   keycloak:
     container_name: keycloak
     image: quay.io/keycloak/keycloak:21.0.2
-    command: ["start-dev"]
+    command: ["start-dev","--import-realm"]
     ports:
       - 8181:8181
     expose:
@@ -56,7 +56,7 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: admin
       KC_HTTP_PORT: 8181
     volumes:
-      - ./auth/import:/opt/keycloak/data/import
+      - ./auth/import/:/opt/keycloak/data/import
     networks:
       - keycloak
 

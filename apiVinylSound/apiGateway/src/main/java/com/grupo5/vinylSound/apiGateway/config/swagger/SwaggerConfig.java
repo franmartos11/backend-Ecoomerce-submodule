@@ -10,7 +10,6 @@ import java.util.Objects;
 
 @Configuration
 public class SwaggerConfig {
-
     @Bean
     public CommandLineRunner openApiGroups(
             RouteDefinitionLocator locator,

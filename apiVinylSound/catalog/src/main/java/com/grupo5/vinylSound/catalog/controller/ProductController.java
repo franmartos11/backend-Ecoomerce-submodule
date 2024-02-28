@@ -11,17 +11,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
 @RequiredArgsConstructor
 @RestController
 @CrossOrigin
-@RequestMapping("/catalogo/product")
+@RequestMapping("/catalog/product")
 public class ProductController {
     private final ProductService service;
 
     @PostMapping("/create")
+    @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> create(@RequestBody ProductDTO dto)
             throws BadRequestException {
         service.create(dto);
@@ -85,12 +87,14 @@ public class ProductController {
     }
 
     @PutMapping("/edit")
+    @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> update(@RequestBody ProductDTO dto) throws NotFoundException, BadRequestException {
         service.update(dto);
         return new ResponseEntity<>("Se edito el producto correctamente",HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> deleteById(@PathVariable Long id) throws NotFoundException {
         service.deleteById(id);
         return new ResponseEntity<>("Se elimino el producto", HttpStatus.OK);

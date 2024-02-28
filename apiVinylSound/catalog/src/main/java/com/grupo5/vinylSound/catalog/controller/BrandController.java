@@ -7,6 +7,7 @@ import com.grupo5.vinylSound.catalog.service.BrandService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,11 +15,12 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @CrossOrigin
-@RequestMapping("/catalogo/brand")
+@RequestMapping("/catalog/brand")
 public class BrandController {
     private final BrandService service;
 
     @PostMapping("/create")
+    @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> create(@RequestBody BrandDTO dto)
             throws BadRequestException {
         service.create(dto);
@@ -36,12 +38,14 @@ public class BrandController {
     }
 
     @PutMapping("/edit")
+    @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> update(@RequestBody BrandDTO dto) throws NotFoundException, BadRequestException {
         service.update(dto);
         return new ResponseEntity<>("Se edito la marca correctamente",HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> deleteById(@PathVariable Long id) throws NotFoundException {
         service.deleteById(id);
         return new ResponseEntity<>("Se elimino la marca", HttpStatus.OK);

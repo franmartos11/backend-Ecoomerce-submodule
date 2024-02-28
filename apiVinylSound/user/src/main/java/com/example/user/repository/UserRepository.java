@@ -56,6 +56,7 @@ public class UserRepository {
                 .city(representation.firstAttribute("city"))
                 .postalCode(representation.firstAttribute("postalCode"))
                 .address(representation.firstAttribute("address"))
+                .productsFav(null)
                 .build();
     }
 

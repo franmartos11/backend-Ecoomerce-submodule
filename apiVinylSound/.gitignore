@@ -1,0 +1,36 @@
+# IntelliJ IDEA
+.idea/
+
+# Maven
+target/
+*.iml
+*.jar
+*.war
+*.ear
+*.xml
+
+# Logs
+log/
+logs/
+
+# Spring Boot
+spring-boot-starter-*/target/
+spring-boot-starter-*/build/
+!spring-boot-starter-*/target/*.jar
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Byte code
+*.class
+
+
+# Gradle
+.gradle/
+build/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
