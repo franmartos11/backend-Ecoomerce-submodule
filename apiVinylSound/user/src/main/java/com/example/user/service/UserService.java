@@ -4,7 +4,13 @@ import com.example.user.exception.NotFoundException;
 import com.example.user.model.User;
 import com.example.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,5 +25,15 @@ public class UserService {
         }
         return user.get();
     }
+
+    public List<User> findAll(){
+        return userRepository.findAll();
+    }
+
+    public void create(User user) {
+        user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
+        userRepository.save(user);
+    }
+
 
 }
