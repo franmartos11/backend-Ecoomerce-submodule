@@ -30,6 +30,7 @@ public class SecurityConfig {
             "/catalog/product/allfav","/catalog/product/category={categoryId}",
             "/catalog/product/subcategory={subcategoryId}", "/catalog/product/brand={brandId}",
             "/catalog/subcategory/all","/catalog/subcategory/{id}",
+            "/user/create","/user/forgot-password/{email}",
     };
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain (ServerHttpSecurity http) {
