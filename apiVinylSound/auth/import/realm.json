@@ -28,9 +28,9 @@
   "enabled": true,
   "sslRequired": "external",
   "registrationAllowed": false,
-  "registrationEmailAsUsername": false,
+  "registrationEmailAsUsername": true,
   "rememberMe": false,
-  "verifyEmail": false,
+  "verifyEmail": true,
   "loginWithEmailAllowed": true,
   "duplicateEmailsAllowed": false,
   "resetPasswordAllowed": false,
@@ -442,8 +442,8 @@
   "otpPolicyPeriod": 30,
   "otpPolicyCodeReusable": false,
   "otpSupportedApplications": [
-    "totpAppFreeOTPName",
     "totpAppMicrosoftAuthenticatorName",
+    "totpAppFreeOTPName",
     "totpAppGoogleName"
   ],
   "webAuthnPolicyRpEntityName": "keycloak",
@@ -481,18 +481,39 @@
       "serviceAccountClientId": "user-client",
       "disableableCredentialTypes": [],
       "requiredActions": [],
-      "realmRoles": [
-        "default-roles-vinylsound"
-      ],
+      "realmRoles": ["default-roles-vinylsound","admin"],
       "clientRoles": {
         "realm-management": [
           "query-users",
           "view-users",
+          "manage-realm",
+          "view-realm",
           "manage-users"
         ]
       },
       "notBefore": 0,
       "groups": []
+    },
+    {
+      "id": "f6b22db4-eb7d-48bd-8a88-8ca56edbc0b6",
+      "createdTimestamp": 1646188800000,
+      "username": "vinylsoundinformation@gmail.com",
+      "enabled": true,
+      "totp": false,
+      "emailVerified": true,
+      "firstName": "Vinyl",
+      "lastName": "Sound",
+      "email": "vinylsoundinformation@gmail.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin",
+          "temporary": false
+        }
+      ],
+      "disableableCredentialTypes": [],
+      "requiredActions": [],
+      "realmRoles": ["default-roles-vinylsound","admin"]
     }
   ],
   "scopeMappings": [
@@ -1490,7 +1511,20 @@
     "xXSSProtection": "1; mode=block",
     "strictTransportSecurity": "max-age=31536000; includeSubDomains"
   },
-  "smtpServer": {},
+  "smtpServer": {
+    "replyToDisplayName": "",
+    "starttls": "true",
+    "auth": "true",
+    "envelopeFrom": "",
+    "ssl": "false",
+    "password": "rxez fzfp fudk nfji",
+    "port": "587",
+    "replyTo": "",
+    "host": "smtp.gmail.com",
+    "from": "vinylsoundinformation@gmail.com",
+    "fromDisplayName": "Vinyl Sound",
+    "user": "vinylsoundinformation@gmail.com"
+  },
   "eventsEnabled": false,
   "eventsListeners": [
     "jboss-logging"
