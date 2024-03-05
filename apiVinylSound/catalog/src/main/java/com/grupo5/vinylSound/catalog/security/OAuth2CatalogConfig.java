@@ -8,9 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
 
-import java.util.List;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -37,8 +35,6 @@ public class OAuth2CatalogConfig {
                 .anyRequest().authenticated()
                 .and()
                 .csrf().disable()
-                .cors().configurationSource(request -> corsConfiguration())
-                .and()
                 .oauth2ResourceServer()
                 .jwt()
                 .jwtAuthenticationConverter(new KeyCloakJwtConverter());
@@ -51,14 +47,4 @@ public class OAuth2CatalogConfig {
         return NimbusJwtDecoder.withJwkSetUri("http://localhost:8181/realms/vinylSound/protocol/openid-connect/certs").build();
     }
 
-    @Bean
-    public CorsConfiguration corsConfiguration() {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
-        corsConfiguration.addAllowedOriginPattern("http://localhost:5173");
-        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PUT","OPTIONS","PATCH", "DELETE"));
-        corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setExposedHeaders(List.of("Authorization"));
-        return corsConfiguration;
-    }
 }
