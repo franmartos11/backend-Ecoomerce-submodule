@@ -8,7 +8,9 @@ import org.springframework.security.oauth2.client.oidc.web.server.logout.OidcCli
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.logout.ServerLogoutSuccessHandler;
+import org.springframework.web.cors.CorsConfiguration;
 
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -38,6 +40,8 @@ public class SecurityConfig {
                 .anyExchange().authenticated()
                 .and()
                 .csrf().disable()
+                .cors().configurationSource(request -> corsConfiguration())
+                .and()
                 .oauth2Login()
                 .and()
                 .logout()
@@ -52,4 +56,16 @@ public class SecurityConfig {
         oidcClientInitiatedLogoutSuccessHandler.setPostLogoutRedirectUri("{baseUrl}/login");
         return oidcClientInitiatedLogoutSuccessHandler;
     }
+
+    @Bean
+    public CorsConfiguration corsConfiguration() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
+        corsConfiguration.addAllowedOriginPattern(("*"));
+        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PUT","OPTIONS","PATCH", "DELETE"));
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setExposedHeaders(List.of("Authorization"));
+        return corsConfiguration;
+    }
+
 }
