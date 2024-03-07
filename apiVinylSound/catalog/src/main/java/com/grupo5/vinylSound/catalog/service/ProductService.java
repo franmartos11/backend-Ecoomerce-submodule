@@ -250,8 +250,8 @@ public class ProductService {
         return new ProductResponseDTO(
                 product.getId(), product.getTitle(), product.getPrice(),
                 product.getDescription(), product.getImage(),
-                product.getFav(), product.getSubcategory().getId(),
-                product.getSubcategory().getCategory().getId(),product.getBrand().getId()
+                product.getFav(), product.getSubcategory().getName(),
+                product.getSubcategory().getCategory().getName(),product.getBrand().getName()
         );
     }
 }
