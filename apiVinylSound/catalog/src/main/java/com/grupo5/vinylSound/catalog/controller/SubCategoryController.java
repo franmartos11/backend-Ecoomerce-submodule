@@ -14,7 +14,6 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@CrossOrigin
 @RequestMapping("/catalog/subcategory")
 public class SubCategoryController {
     private final SubCategoryService service;
