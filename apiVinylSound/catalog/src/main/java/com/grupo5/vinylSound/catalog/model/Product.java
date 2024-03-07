@@ -30,9 +30,6 @@ public class Product {
     @Column(nullable = false)
     private String image;
 
-    @Column(nullable = false)
-    private Boolean fav;
-
     @ManyToOne
     @JoinColumn(name = "id_subcategory")
     private SubCategory subcategory;

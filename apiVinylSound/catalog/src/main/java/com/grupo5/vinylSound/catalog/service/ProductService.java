@@ -50,7 +50,7 @@ public class ProductService {
             throw new BadRequestException("No existe una marca con el id: " + dto.idBrand());
         }
         repository.save(mapToProduct(new ProductDTO(null, dto.title(), dto.price(), dto.description(),
-                dto.image(),dto.fav(),dto.idSubcategory(),
+                dto.image(),dto.idSubcategory(),
                 dto.idBrand())));
     }
 
@@ -92,25 +92,6 @@ public class ProductService {
         }
 
         return mapToDTO(optionalProduct.get());
-    }
-
-    public Page<ProductResponseDTO> getAllFav(PageRequestDTO dto){
-        var products = repository.findAllFav();
-        if (products.isEmpty()) {
-            return Page.empty();
-        }
-
-        List<ProductResponseDTO> listDTO = new ArrayList<>();
-        for (Product product : products) {
-            listDTO.add(mapToDTO(product));
-        }
-
-        var holder = new PagedListHolder<>(listDTO);
-        holder.setPage(dto.getPage());
-        holder.setPageSize(dto.getSize());
-        var slice = holder.getPageList();
-
-        return new PageImpl<>(slice,new PageRequestDTO().getPageable(dto),listDTO.size());
     }
 
     public Page<ProductResponseDTO> filterByCategory(PageRequestDTO pageRequestDTO, Long idCategory) throws NotFoundException {
@@ -233,7 +214,6 @@ public class ProductService {
         product.setPrice(dto.price());
         product.setDescription(dto.description());
         product.setImage(dto.image());
-        product.setFav(dto.fav());
 
         var subcategory = new SubCategory();
         subcategory.setId(dto.idSubcategory());
@@ -249,8 +229,7 @@ public class ProductService {
     private ProductResponseDTO mapToDTO(Product product){
         return new ProductResponseDTO(
                 product.getId(), product.getTitle(), product.getPrice(),
-                product.getDescription(), product.getImage(),
-                product.getFav(), product.getSubcategory().getName(),
+                product.getDescription(), product.getImage(),product.getSubcategory().getName(),
                 product.getSubcategory().getCategory().getName(),product.getBrand().getName()
         );
     }
