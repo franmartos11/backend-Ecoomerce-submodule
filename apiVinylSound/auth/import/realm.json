@@ -478,7 +478,7 @@
       "username": "service-account-user-client",
       "enabled": true,
       "totp": false,
-      "emailVerified": false,
+      "emailVerified": true,
       "serviceAccountClientId": "user-client",
       "disableableCredentialTypes": [],
       "requiredActions": [],
@@ -497,6 +497,27 @@
       },
       "notBefore": 0,
       "groups": []
+    },
+    {
+      "id": "f6b22db4-eb7d-48bd-8a88-8ca56edbc0b6",
+      "createdTimestamp": 1646188800000,
+      "username": "vinylsoundinformation@gmail.com",
+      "enabled": true,
+      "totp": false,
+      "emailVerified": true,
+      "firstName": "Vinyl",
+      "lastName": "Sound",
+      "email": "vinylsoundinformation@gmail.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin",
+          "temporary": false
+        }
+      ],
+      "disableableCredentialTypes": [],
+      "requiredActions": [],
+      "realmRoles": ["default-roles-vinylsound","admin"]
     }
   ],
   "scopeMappings": [
@@ -670,7 +691,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "**********",
+      "secret": "Sp81AVKCCRxAxAx122Rv5V6J9GQnlJHu",
       "redirectUris": [
         "https://oauth.pstmn.io/v1/browser-callback",
         "http://localhost:8089/login/oauth2/code/keycloak"
@@ -929,7 +950,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "**********",
+      "secret": "WSYHBndG6DLUWpBk2ii5xT6u7D781lFg",
       "redirectUris": [
         "/*"
       ],
@@ -1559,7 +1580,7 @@
     "auth": "true",
     "envelopeFrom": "",
     "ssl": "false",
-    "password": "**********",
+    "password": "rxez fzfp fudk nfji",
     "port": "587",
     "replyTo": "",
     "host": "smtp.gmail.com",

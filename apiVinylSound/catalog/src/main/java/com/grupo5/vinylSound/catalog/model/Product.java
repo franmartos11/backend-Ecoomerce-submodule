@@ -1,11 +1,14 @@
 package com.grupo5.vinylSound.catalog.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -27,8 +30,9 @@ public class Product {
     @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false)
-    private String image;
+    @OneToMany(mappedBy = "product",cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    private Set<Image> images = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "id_subcategory")

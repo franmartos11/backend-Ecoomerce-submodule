@@ -6,12 +6,11 @@ import com.grupo5.vinylSound.catalog.model.Brand;
 import com.grupo5.vinylSound.catalog.model.Product;
 import com.grupo5.vinylSound.catalog.model.SubCategory;
 import com.grupo5.vinylSound.catalog.model.dto.PageRequestDTO;
+import com.grupo5.vinylSound.catalog.model.dto.image.ImageProductDTO;
+import com.grupo5.vinylSound.catalog.model.dto.image.ImageDTO;
 import com.grupo5.vinylSound.catalog.model.dto.product.ProductDTO;
 import com.grupo5.vinylSound.catalog.model.dto.product.ProductResponseDTO;
-import com.grupo5.vinylSound.catalog.repository.BrandRepository;
-import com.grupo5.vinylSound.catalog.repository.CategoryRepository;
-import com.grupo5.vinylSound.catalog.repository.ProductRepository;
-import com.grupo5.vinylSound.catalog.repository.SubCategoryRepository;
+import com.grupo5.vinylSound.catalog.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.support.MutableSortDefinition;
 import org.springframework.beans.support.PagedListHolder;
@@ -21,7 +20,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @RequiredArgsConstructor
@@ -31,6 +32,7 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final SubCategoryRepository subCategoryRepository;
     private final BrandRepository brandRepository;
+    private final ImageService imageService;
 
     public void create(ProductDTO dto) throws BadRequestException {
         if (repository.findByTitle(dto.title()).isPresent()) {
@@ -49,9 +51,14 @@ public class ProductService {
         if (brandRepository.findById(dto.idBrand()).isEmpty()) {
             throw new BadRequestException("No existe una marca con el id: " + dto.idBrand());
         }
-        repository.save(mapToProduct(new ProductDTO(null, dto.title(), dto.price(), dto.description(),
-                dto.image(),dto.idSubcategory(),
-                dto.idBrand())));
+
+        var persist = repository.save(mapToProduct(new ProductDTO(null, dto.title(), dto.price(), dto.description(),dto.idSubcategory(),
+                dto.idBrand(),null)));
+
+        for (ImageProductDTO each:dto.images()) {
+            imageService.createImage(new ImageDTO(null,each.name(), each.url(), persist.getId()));
+        }
+
     }
 
     //Gets //////////////////////////////////////////////////////////////////////////////////////////
@@ -61,9 +68,11 @@ public class ProductService {
             return Page.empty();
         }
 
+
         List<ProductResponseDTO> listDTO = new ArrayList<>();
         for (Product product : products) {
-            listDTO.add(mapToDTO(product));
+            var images = imageService.getAllByIdProduct(product.getId());
+            listDTO.add(mapToDTO(product,images));
         }
 
         var holder = new PagedListHolder<>(listDTO);
@@ -81,7 +90,9 @@ public class ProductService {
             throw new NotFoundException("No hay registro de producto con el id: " + id);
         }
 
-        return mapToDTO(optionalProduct.get());
+        var images = imageService.getAllByIdProduct(id);
+
+        return mapToDTO(optionalProduct.get(),images);
     }
 
     public ProductResponseDTO getByTitle(String title) throws NotFoundException {
@@ -91,24 +102,30 @@ public class ProductService {
             throw new NotFoundException("No hay registro de producto con el titulo: " + title);
         }
 
-        return mapToDTO(optionalProduct.get());
+        var images = imageService.getAllByTitleProduct(title);
+
+        return mapToDTO(optionalProduct.get(),images);
     }
 
     public Page<ProductResponseDTO> filterByCategory(PageRequestDTO pageRequestDTO, Long idCategory) throws NotFoundException {
-        var category = categoryRepository.findById(idCategory);
-        if (category.isEmpty()){
+
+        if (categoryRepository.findById(idCategory).isEmpty()){
             throw new NotFoundException("No hay registro de categoria con el id: " + idCategory);
         }
+
         var pageable = pageRequestDTO.getPageable(pageRequestDTO);
         var products = repository.findByCategoryId(pageable,idCategory);
-        if (products.isEmpty()) {
 
+        if (products.isEmpty()) {
             return Page.empty();
         }
+
         List<ProductResponseDTO> listDTO = new ArrayList<>();
         for (Product product : products) {
-            listDTO.add(mapToDTO(product));
+            var images = imageService.getAllByIdProduct(product.getId());
+            listDTO.add(mapToDTO(product,images));
         }
+
         var holder = new PagedListHolder<>(listDTO);
         holder.setPage(pageRequestDTO.getPage());
         holder.setPageSize(pageRequestDTO.getSize());
@@ -121,20 +138,23 @@ public class ProductService {
     }
 
     public Page<ProductResponseDTO> filterBySubcategory(PageRequestDTO pageRequestDTO, Long idSubcategory) throws NotFoundException {
-        var subcategory = subCategoryRepository.findById(idSubcategory);
-        if (subcategory.isEmpty()){
+        if (subCategoryRepository.findById(idSubcategory).isEmpty()){
             throw new NotFoundException("No hay registro de subcategoria con el id: " + idSubcategory);
         }
 
         var pageable = pageRequestDTO.getPageable(pageRequestDTO);
         var products = repository.findBySubcategoryId(pageable,idSubcategory);
+
         if (products.isEmpty()) {
             return Page.empty();
         }
+
         List<ProductResponseDTO> listDTO = new ArrayList<>();
         for (Product product : products) {
-            listDTO.add(mapToDTO(product));
+            var images = imageService.getAllByIdProduct(product.getId());
+            listDTO.add(mapToDTO(product,images));
         }
+
         var holder = new PagedListHolder<>(listDTO);
         holder.setPage(pageRequestDTO.getPage());
         holder.setPageSize(pageRequestDTO.getSize());
@@ -147,20 +167,24 @@ public class ProductService {
     }
 
     public Page<ProductResponseDTO> filterByBrand(PageRequestDTO pageRequestDTO, Long idBrand) throws NotFoundException {
-        var brand = brandRepository.findById(idBrand);
-        if (brand.isEmpty()){
+        if (brandRepository.findById(idBrand).isEmpty()){
             throw new NotFoundException("No hay registro de marca con el id: " + idBrand);
         }
+
         var pageable = pageRequestDTO.getPageable(pageRequestDTO);
         var products = repository.findByBrandId(pageable,idBrand);
+
         if (products.isEmpty()) {
 
             return Page.empty();
         }
+
         List<ProductResponseDTO> listDTO = new ArrayList<>();
         for (Product product : products) {
-            listDTO.add(mapToDTO(product));
+            var images = imageService.getAllByIdProduct(product.getId());
+            listDTO.add(mapToDTO(product,images));
         }
+
         var holder = new PagedListHolder<>(listDTO);
         holder.setPage(pageRequestDTO.getPage());
         holder.setPageSize(pageRequestDTO.getSize());
@@ -195,6 +219,10 @@ public class ProductService {
         }
 
         repository.save(mapToProduct(dto));
+        for (ImageProductDTO image :dto.images()) {
+            imageService.update(image, dto.id());
+        }
+
     }
 
     public void deleteById(Long id) throws NotFoundException {
@@ -213,8 +241,6 @@ public class ProductService {
         product.setTitle(dto.title());
         product.setPrice(dto.price());
         product.setDescription(dto.description());
-        product.setImage(dto.image());
-
         var subcategory = new SubCategory();
         subcategory.setId(dto.idSubcategory());
         product.setSubcategory(subcategory);
@@ -226,10 +252,14 @@ public class ProductService {
         return product;
     }
 
-    private ProductResponseDTO mapToDTO(Product product){
+    private ProductResponseDTO mapToDTO(Product product,List<ImageDTO> images){
+        Set<ImageDTO> listDto = new HashSet<>();
+        for (ImageDTO image: images) {
+            listDto.add(new ImageDTO(image.id(), image.name(), image.url(), product.getId()));
+        }
         return new ProductResponseDTO(
                 product.getId(), product.getTitle(), product.getPrice(),
-                product.getDescription(), product.getImage(),product.getSubcategory().getName(),
+                product.getDescription(), listDto,product.getSubcategory().getName(),
                 product.getSubcategory().getCategory().getName(),product.getBrand().getName()
         );
     }

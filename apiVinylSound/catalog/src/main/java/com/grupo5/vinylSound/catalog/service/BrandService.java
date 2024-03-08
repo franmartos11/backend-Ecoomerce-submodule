@@ -22,7 +22,7 @@ public class BrandService {
         if (repository.findByName(dto.name()).isPresent()) {
             throw new BadRequestException("Ya existe una marca con el nombre: " + dto.name());
         }
-        repository.save(mapToBrand(new BrandDTO(null,dto.name())));
+        repository.save(mapToBrand(new BrandDTO(null,dto.name(), dto.url())));
     }
 
     public List<BrandDTO> getAll(){
@@ -71,12 +71,13 @@ public class BrandService {
     }
 
     private BrandDTO mapToDTO(Brand brand){
-        return new BrandDTO(brand.getId(),brand.getName());
+        return new BrandDTO(brand.getId(),brand.getName(), brand.getUrl());
     }
     private Brand mapToBrand(BrandDTO dto) {
         var brand = new Brand();
         brand.setId(dto.id());
         brand.setName(dto.name());
+        brand.setUrl(dto.url());
         return brand;
     }
 }

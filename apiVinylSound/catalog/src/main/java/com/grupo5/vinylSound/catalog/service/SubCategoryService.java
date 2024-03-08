@@ -34,7 +34,7 @@ public class SubCategoryService {
 
         repository.save(
                 mapToSubCategory(
-                        new SubCategoryDTO(null,dto.name(),dto.idCategory())));
+                        new SubCategoryDTO(null,dto.name(), dto.idCategory())));
     }
 
     public List<SubCategoryDTO> getAll(){
@@ -100,8 +100,7 @@ public class SubCategoryService {
 
     private SubCategoryDTO mapToDTO(SubCategory subCategory){
         return new SubCategoryDTO(
-                subCategory.getId(), subCategory.getName(),
-                subCategory.getCategory().getId()
+                subCategory.getId(), subCategory.getName(), subCategory.getCategory().getId()
         );
     }
 }

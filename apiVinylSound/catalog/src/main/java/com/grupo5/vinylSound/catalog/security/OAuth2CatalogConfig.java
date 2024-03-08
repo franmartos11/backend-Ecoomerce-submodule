@@ -21,7 +21,7 @@ public class OAuth2CatalogConfig {
             // other public endpoints of your API may be appended to this array
             "/catalog/brand/all","/catalog/brand/{id}",
             "/catalog/category/all","/catalog/category/{id}",
-            "/catalog/product/all","/catalog/product/{id}",
+            "/catalog/product/all","/catalog/product/{id}","/catalog/product",
             "/catalog/product/allfav","/catalog/product/category={categoryId}",
             "/catalog/product/subcategory={subcategoryId}", "/catalog/product/brand={brandId}",
             "/catalog/subcategory/all","/catalog/subcategory/{id}",

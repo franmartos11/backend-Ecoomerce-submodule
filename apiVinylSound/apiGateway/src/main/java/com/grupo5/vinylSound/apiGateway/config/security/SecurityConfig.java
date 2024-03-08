@@ -26,7 +26,7 @@ public class SecurityConfig {
             // other public endpoints of your API may be appended to this array
             "/catalog/brand/all","/catalog/brand/{id}",
             "/catalog/category/all","/catalog/category/{id}",
-            "/catalog/product/all","/catalog/product/{id}",
+            "/catalog/product/all","/catalog/product/{id}","/catalog/product",
             "/catalog/product/allfav","/catalog/product/category={categoryId}",
             "/catalog/product/subcategory={subcategoryId}", "/catalog/product/brand={brandId}",
             "/catalog/subcategory/all","/catalog/subcategory/{id}",
@@ -67,17 +67,4 @@ public class SecurityConfig {
         corsConfiguration.setExposedHeaders(List.of("Authorization"));
         return corsConfiguration;
     }
-
-    /*@Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:5173"));
-        corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
-        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "DELETE"));
-        corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setExposedHeaders(List.of("Authorization"));
-        source.registerCorsConfiguration("/**", corsConfiguration);
-        return source;
-    }*/
 }
