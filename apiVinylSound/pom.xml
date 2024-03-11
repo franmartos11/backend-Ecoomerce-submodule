@@ -22,9 +22,10 @@
 
     <modules>
         <module>catalog</module>
-        <module>ConfigServer</module>
+        <module>configServer</module>
         <module>eurekaServer</module>
         <module>apiGateway</module>
+        <module>payment</module>
         <module>user</module>
     </modules>
 </project>
