@@ -54,11 +54,11 @@ public class SecurityConfig {
   private static final String[] AUTH_ADMIN_ENDPOINTS = {
 
     // CATALOG
-    "/catalog/brand/create", "/catalog/brand/edit", "/catalog/brand/delete/{id}",
-    "/catalog/category/create", "/catalog/category/edit", "/catalog/category/delete/{id}",
-    "/catalog/image/delete/{id}",
-    "/catalog/product/create", "/catalog/product/edit", "/catalog/product/delete/{id}",
-    "/catalog/subcategory/create", "/catalog/subcategory/edit", "/catalog/subcategory/delete/{id}",
+    "/catalog/brand/create", "/catalog/brand/edit", "/catalog/brand/delete",
+    "/catalog/category/create", "/catalog/category/edit", "/catalog/category/delete",
+    "/catalog/image/delete",
+    "/catalog/product/create", "/catalog/product/edit", "/catalog/product/delete",
+    "/catalog/subcategory/create", "/catalog/subcategory/edit", "/catalog/subcategory/delete",
 
     // USER
     "/user/all", "/user/{id}", "/user/edit", "/user/reset-password/{id}", "/user/delete/{id}",
