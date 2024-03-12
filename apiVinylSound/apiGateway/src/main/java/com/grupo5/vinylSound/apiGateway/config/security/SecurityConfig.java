@@ -65,7 +65,6 @@ public class SecurityConfig {
 
   };
 
-
   @Bean
   public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
     http
