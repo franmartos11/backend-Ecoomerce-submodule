@@ -10,7 +10,6 @@ import com.grupo5.vinylSound.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,19 +28,16 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<List<UserResponseDTO>> findAll(){
         return ResponseEntity.ok(service.findAll());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_admin','ROLE_user')")
     public ResponseEntity<UserResponseDTO> findById(@PathVariable String id) throws NotFoundException {
         return ResponseEntity.ok(service.getById(id));
     }
 
     @PutMapping("/edit")
-    @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> update(@RequestBody UserEditDTO dto) throws NotFoundException, BadRequestException {
         service.edit(dto);
         return new ResponseEntity<>("Se edito el usuario correctamente",HttpStatus.OK);
@@ -54,14 +50,12 @@ public class UserController {
     }
 
     @PutMapping("/reset-password/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_admin','ROLE_user')")
     public ResponseEntity<String> resetPassword(@PathVariable String id,@RequestParam String password) throws NotFoundException {
         service.resetPassword(password,id);
         return new ResponseEntity<>("Se modifico la contraseña correctamente",HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> deleteById(@PathVariable String id) throws NotFoundException {
         service.deleteById(id);
         return new ResponseEntity<>("Se elimino el usuario", HttpStatus.OK);

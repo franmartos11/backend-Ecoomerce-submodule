@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import org.keycloak.admin.client.Keycloak;
 
 
+import javax.ws.rs.core.Response;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -36,15 +37,27 @@ public class UserRepository {
         }
 
         var rol = roleResource.get("user").toRepresentation();
-        var response = userResource.create(mapToRepresentation(user));
+        Response response;
+        try {
+            response = userResource.create(mapToRepresentation(user));
+            System.out.println("creo el usuario");
+        } catch (Exception e) {
+            throw new InternalServerErrorException("Se ha producido un error al crear el nuevo usuario: " + user.getEmail());
+        }
+
         var path = response.getLocation().getPath();
+        System.out.println("busco el path");
         var userId = path.substring(path.lastIndexOf("/") + 1);
+        System.out.println("busco el user id");
 
         if (response.getStatus() ==201){
+            System.out.println("verifico codigo de respuesta");
             userResource.get(userId).roles().realmLevel().add(List.of(rol));
-            userResource.get(userId).sendVerifyEmail();
+            System.out.println("quiero enviar el email");
+            //userResource.get(userId).sendVerifyEmail();
+            System.out.println("envio el email");
         }else {
-            throw new InternalServerErrorException("Se ha producido un error al crear el nuevo usuario: " + user.getEmail());
+            throw new InternalServerErrorException("Se ha producido un error 2 al crear el nuevo usuario: " + user.getEmail());
         }
     }
 

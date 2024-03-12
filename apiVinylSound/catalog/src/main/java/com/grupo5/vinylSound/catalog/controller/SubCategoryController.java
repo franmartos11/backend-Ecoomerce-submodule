@@ -7,7 +7,6 @@ import com.grupo5.vinylSound.catalog.service.SubCategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,7 +18,6 @@ public class SubCategoryController {
     private final SubCategoryService service;
 
     @PostMapping("/create")
-    @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> create(@RequestBody SubCategoryDTO dto)
             throws BadRequestException {
         service.create(dto);
@@ -37,14 +35,12 @@ public class SubCategoryController {
     }
 
     @PutMapping("/edit")
-    @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> update(@RequestBody SubCategoryDTO dto) throws NotFoundException, BadRequestException {
         service.update(dto);
         return new ResponseEntity<>("Se edito la subcategoria correctamente",HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
-    @PreAuthorize("hasRole('ROLE_admin')")
     public ResponseEntity<String> deleteById(@PathVariable Long id) throws NotFoundException {
         service.deleteById(id);
         return new ResponseEntity<>("Se elimino la subcategoria", HttpStatus.OK);
