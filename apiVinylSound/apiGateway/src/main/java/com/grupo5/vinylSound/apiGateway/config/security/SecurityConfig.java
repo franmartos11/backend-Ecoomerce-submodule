@@ -30,6 +30,7 @@ public class SecurityConfig {
             "/catalog/product/allfav","/catalog/product/category={categoryId}",
             "/catalog/product/subcategory={subcategoryId}", "/catalog/product/brand={brandId}",
             "/catalog/subcategory/all","/catalog/subcategory/{id}",
+            "/catalog/image/delete",
             "/user/create","/user/forgot-password/{email}",
     };
     @Bean
