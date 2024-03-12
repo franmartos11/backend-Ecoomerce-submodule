@@ -40,8 +40,8 @@ public class BrandController {
         return new ResponseEntity<>("Se edito la marca correctamente",HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteById(@PathVariable Long id) throws NotFoundException {
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteById(@RequestParam Long id) throws NotFoundException {
         service.deleteById(id);
         return new ResponseEntity<>("Se elimino la marca", HttpStatus.OK);
     }

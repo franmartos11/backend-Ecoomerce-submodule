@@ -40,8 +40,8 @@ public class SubCategoryController {
         return new ResponseEntity<>("Se edito la subcategoria correctamente",HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteById(@PathVariable Long id) throws NotFoundException {
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteById(@RequestParam Long id) throws NotFoundException {
         service.deleteById(id);
         return new ResponseEntity<>("Se elimino la subcategoria", HttpStatus.OK);
     }
