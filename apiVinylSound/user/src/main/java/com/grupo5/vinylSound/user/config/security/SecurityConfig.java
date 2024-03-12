@@ -1,6 +1,6 @@
-package com.grupo5.vinylsound.payment.config.security;
+package com.grupo5.vinylSound.user.config.security;
 
-import com.grupo5.vinylsound.payment.security.CustomGatewayFilter;
+import com.grupo5.vinylSound.user.security.CustomGatewayFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

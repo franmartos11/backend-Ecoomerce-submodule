@@ -27,17 +27,6 @@ public class UserService {
             throw new BadRequestException("La contraseña no puede estar vacio.");
         }
 
-        if(dto.address() == null || dto.address().isEmpty()){
-            throw new BadRequestException("La dirección no puede estar vacio.");
-        }
-
-        if(dto.city() == null || dto.city().isEmpty()){
-            throw new BadRequestException("La ciudad no puede estar vacio.");
-        }
-
-        if(dto.postalCode() == null || dto.postalCode().isEmpty()){
-            throw new BadRequestException("El codigo postal no puede estar vacio.");
-        }
         repository.save(mapToUser(dto));
     }
 

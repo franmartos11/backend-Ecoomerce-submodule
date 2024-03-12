@@ -23,4 +23,10 @@ public class GlobalHandleException {
     public ResponseEntity<String> NotFound(NotFoundException e){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
+
+    @ExceptionHandler({UnauthorizedException.class})
+    public ResponseEntity<String> Unauthorized(UnauthorizedException e){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+    }
+
 }
