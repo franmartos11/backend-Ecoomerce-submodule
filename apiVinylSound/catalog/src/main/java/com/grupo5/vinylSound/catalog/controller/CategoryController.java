@@ -43,9 +43,9 @@ public class CategoryController {
         return new ResponseEntity<>("Se edito la categoria correctamente",HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/delete")
     @PreAuthorize("hasRole('ROLE_admin')")
-    public ResponseEntity<String> deleteById(@PathVariable Long id) throws NotFoundException {
+    public ResponseEntity<String> deleteById(@RequestParam Long id) throws NotFoundException {
         service.deleteById(id);
         return new ResponseEntity<>("Se elimino la categoria", HttpStatus.OK);
     }
