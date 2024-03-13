@@ -40,7 +40,7 @@ public class ProductController {
         return ResponseEntity.ok(service.getById(id));
     }
 
-    @GetMapping
+    @GetMapping("/search")
     public ResponseEntity<ProductResponseDTO> getByTitle(@RequestParam("title") String title) throws NotFoundException {
         return ResponseEntity.ok(service.getByTitle(title));
     }
