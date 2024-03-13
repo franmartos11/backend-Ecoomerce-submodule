@@ -52,7 +52,7 @@ public class SecurityConfig {
     CorsConfiguration corsConfiguration = new CorsConfiguration();
     corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
     corsConfiguration.addAllowedOriginPattern("http://localhost:5173");
-    corsConfiguration.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PUT","OPTIONS","PATCH","DELETE"));
+    corsConfiguration.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS","PATCH"));
     corsConfiguration.setAllowCredentials(true);
     corsConfiguration.setExposedHeaders(List.of("Authorization"));
     return corsConfiguration;
