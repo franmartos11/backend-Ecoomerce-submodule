@@ -27,5 +27,6 @@
         <module>apiGateway</module>
         <module>payment</module>
         <module>user</module>
+        <module>order</module>
     </modules>
 </project>

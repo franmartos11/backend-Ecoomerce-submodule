@@ -1,6 +1,5 @@
 package com.grupo5.vinylSound.apiGateway.config.security;
 
-import com.grupo5.vinylSound.apiGateway.security.KeyCloakJwtConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
