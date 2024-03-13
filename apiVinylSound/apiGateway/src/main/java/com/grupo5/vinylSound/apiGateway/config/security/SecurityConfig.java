@@ -32,15 +32,15 @@ public class SecurityConfig {
   @Bean
   public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
     http
+      .csrf().disable()
+      .cors().configurationSource(request -> corsConfiguration())
+      .and()
       .authorizeExchange()
       .pathMatchers(AUTH_WHITELIST).permitAll()
       .pathMatchers("/api/**").permitAll()
       .pathMatchers("/admin/**").hasAuthority("ROLE_admin")
       .pathMatchers("/user/**").hasAnyAuthority("ROLE_user", "ROLE_admin")
       .anyExchange().authenticated()
-      .and()
-      .csrf().disable()
-      .cors().configurationSource(request -> corsConfiguration())
       .and()
       .oauth2ResourceServer()
       .jwt()
