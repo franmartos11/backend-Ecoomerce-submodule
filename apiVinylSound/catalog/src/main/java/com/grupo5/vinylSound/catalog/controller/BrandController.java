@@ -13,34 +13,33 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/catalog/brand")
 public class BrandController {
     private final BrandService service;
 
-    @PostMapping("/create")
+    @PostMapping("/admin/catalog/brand/create")
     public ResponseEntity<String> create(@RequestBody BrandDTO dto)
             throws BadRequestException {
         service.create(dto);
         return new ResponseEntity<>("Marca creada exitosamente", HttpStatus.CREATED);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/api/catalog/brand/all")
     public ResponseEntity<List<BrandDTO>> getAll() {
         return ResponseEntity.ok(service.getAll());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/api/catalog/brand/{id}")
     public ResponseEntity<BrandDTO> getById(@PathVariable Long id) throws NotFoundException {
         return ResponseEntity.ok(service.getById(id));
     }
 
-    @PutMapping("/edit")
+    @PutMapping("/admin/catalog/brand/edit")
     public ResponseEntity<String> update(@RequestBody BrandDTO dto) throws NotFoundException, BadRequestException {
         service.update(dto);
         return new ResponseEntity<>("Se edito la marca correctamente",HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/admin/catalog/brand/delete")
     public ResponseEntity<String> deleteById(@RequestParam Long id) throws NotFoundException {
         service.deleteById(id);
         return new ResponseEntity<>("Se elimino la marca", HttpStatus.OK);

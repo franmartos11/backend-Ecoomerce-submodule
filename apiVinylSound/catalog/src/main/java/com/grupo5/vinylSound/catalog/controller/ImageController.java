@@ -9,11 +9,10 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/catalog/image")
 public class ImageController {
     private final ImageService service;
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/admin/catalog/image/delete")
     public ResponseEntity<String> deleteById(@RequestParam Long id) throws NotFoundException {
         service.deleteById(id);
         return new ResponseEntity<>("Se elimino la imagen", HttpStatus.OK);

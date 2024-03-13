@@ -12,12 +12,11 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/payment")
 public class PaymentController {
 
   private final PaymentService paymentService;
 
-  @PostMapping("/pay")
+  @PostMapping("/user/payment/pay")
   public ResponseEntity<?> pay(@RequestBody PaymentRequest request) {
     try {
       var response = PaymentResponse.builder()

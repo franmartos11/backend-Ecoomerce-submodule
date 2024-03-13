@@ -16,18 +16,17 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/catalog/product")
 public class ProductController {
     private final ProductService service;
 
-    @PostMapping("/create")
+    @PostMapping("/admin/catalog/product/create")
     public ResponseEntity<String> create(@RequestBody ProductDTO dto)
             throws BadRequestException {
         service.create(dto);
         return new ResponseEntity<>("Producto creado exitosamente", HttpStatus.CREATED);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/api/catalog/product/all")
     public ResponseEntity<Page<ProductResponseDTO>> getAll(@RequestParam("page") Integer page,
                                                            @RequestParam("size") Integer size,
                                                            @RequestParam("sort") Sort.Direction sort,
@@ -35,17 +34,17 @@ public class ProductController {
         return ResponseEntity.ok(service.getAll(new PageRequestDTO(page,size,sort,column)));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/api/catalog/product/{id}")
     public ResponseEntity<ProductResponseDTO> getById(@PathVariable Long id) throws NotFoundException {
         return ResponseEntity.ok(service.getById(id));
     }
 
-    @GetMapping("/search")
+    @GetMapping("/api/catalog/product/search")
     public ResponseEntity<ProductResponseDTO> getByTitle(@RequestParam("title") String title) throws NotFoundException {
         return ResponseEntity.ok(service.getByTitle(title));
     }
 
-    @GetMapping("/category={categoryId}")
+    @GetMapping("/api/catalog/product/category={categoryId}")
     public ResponseEntity<Page<ProductResponseDTO>> filterByCategory(@RequestParam("page") Integer page,
                                                                                @RequestParam("size") Integer size,
                                                                                @RequestParam("sort") Sort.Direction sort,
@@ -55,7 +54,7 @@ public class ProductController {
         return ResponseEntity.ok(service.filterByCategory(new PageRequestDTO(page,size,sort,column),categoryId));
     }
 
-    @GetMapping("/subcategory={subCategoryId}")
+    @GetMapping("/api/catalog/product/subcategory={subCategoryId}")
     public ResponseEntity<Page<ProductResponseDTO>> filterBySubcategory(@RequestParam("page") Integer page,
                                                                                   @RequestParam("size") Integer size,
                                                                                   @RequestParam("sort") Sort.Direction sort,
@@ -65,7 +64,7 @@ public class ProductController {
         return ResponseEntity.ok(service.filterBySubcategory(new PageRequestDTO(page,size,sort,column),subCategoryId));
     }
 
-    @GetMapping("/brand={brandId}")
+    @GetMapping("/api/catalog/product/brand={brandId}")
     public ResponseEntity<Page<ProductResponseDTO>> filterByBrand(@RequestParam("page") Integer page,
                                                                         @RequestParam("size") Integer size,
                                                                         @RequestParam("sort") Sort.Direction sort,
@@ -75,12 +74,12 @@ public class ProductController {
         return ResponseEntity.ok(service.filterByBrand(new PageRequestDTO(page,size,sort,column),brandId));
     }
 
-    @PutMapping("/edit")
+    @PutMapping("/admin/catalog/product/edit")
     public ResponseEntity<String> update(@RequestBody ProductDTO dto) throws NotFoundException, BadRequestException {
         service.update(dto);
         return new ResponseEntity<>("Se edito el producto correctamente",HttpStatus.OK);
     }
-    @DeleteMapping("/delete")
+    @DeleteMapping("/admin/catalog/product/delete")
     public ResponseEntity<String> deleteById(@RequestParam Long id) throws NotFoundException {
         service.deleteById(id);
         return new ResponseEntity<>("Se elimino el producto", HttpStatus.OK);

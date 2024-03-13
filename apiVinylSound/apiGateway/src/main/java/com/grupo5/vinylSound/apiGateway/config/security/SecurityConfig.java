@@ -23,48 +23,10 @@ import java.util.List;
 public class SecurityConfig {
 
   private static final String[] AUTH_WHITELIST = {
-
     // SWAGGER
     "/swagger-resources", "/swagger-resources/**", "/configuration/ui", "/configuration/security",
     "/swagger-ui.html", "/webjars/**", "/v3/api-docs/**", "/swagger-ui/**",
     "/v3/api-docs/**","/swagger-ui/**","/swagger-ui.html",
-
-    // CATALOG
-    "/catalog/brand/all", "/catalog/brand/{id}",
-    "/catalog/category/all", "/catalog/category/{id}",
-    "/catalog/product/all", "/catalog/product/{id}",
-    "/catalog/product/search",
-    "/catalog/product/category={categoryId}", "/catalog/product/subcategory={subcategoryId}",
-    "/catalog/product/brand={brandId}",
-    "/catalog/subcategory/all", "/catalog/subcategory/{id}",
-
-    // USER
-    "/user/create", "/user/forgot-password/{email}",
-
-  };
-
-  private static final String[] AUTH_USER_ENDPOINTS = {
-
-    // USER
-    "/user/{id}", "/user/edit", "/user/reset-password/{id}", "/user/delete/{id}",
-
-    // PAYMENT
-    "/payment/pay",
-
-  };
-
-  private static final String[] AUTH_ADMIN_ENDPOINTS = {
-
-    // CATALOG
-    "/catalog/brand/create", "/catalog/brand/edit", "/catalog/brand/delete",
-    "/catalog/category/create", "/catalog/category/edit", "/catalog/category/delete",
-    "/catalog/image/delete",
-    "/catalog/product/create", "/catalog/product/edit", "/catalog/product/delete",
-    "/catalog/subcategory/create", "/catalog/subcategory/edit", "/catalog/subcategory/delete",
-
-    // USER
-    "/user/all", "/user/{id}", "/user/edit", "/user/reset-password/{id}", "/user/delete/{id}",
-
   };
 
   @Bean
@@ -72,8 +34,9 @@ public class SecurityConfig {
     http
       .authorizeExchange()
       .pathMatchers(AUTH_WHITELIST).permitAll()
-      .pathMatchers(AUTH_USER_ENDPOINTS).hasAuthority("ROLE_user")
-      .pathMatchers(AUTH_ADMIN_ENDPOINTS).hasAuthority("ROLE_admin")
+      .pathMatchers("/api/**").permitAll()
+      .pathMatchers("/admin/**").hasAuthority("ROLE_admin")
+      .pathMatchers("/user/**").hasAnyAuthority("ROLE_user", "ROLE_admin")
       .anyExchange().authenticated()
       .and()
       .csrf().disable()

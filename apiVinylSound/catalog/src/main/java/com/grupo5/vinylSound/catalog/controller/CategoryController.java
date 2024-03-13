@@ -13,34 +13,33 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/catalog/category")
 public class CategoryController {
     private final CategoryService service;
 
-    @PostMapping("/create")
+    @PostMapping("/admin/catalog/category/create")
     public ResponseEntity<String> create(@RequestBody CategoryDTO dto)
             throws BadRequestException {
         service.create(dto);
         return new ResponseEntity<>("Categoria creada exitosamente", HttpStatus.CREATED);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/api/catalog/category/all")
     public ResponseEntity<List<CategoryDTO>> getAll() {
         return ResponseEntity.ok(service.getAll());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/api/catalog/category/{id}")
     public ResponseEntity<CategoryDTO> getById(@PathVariable Long id) throws NotFoundException {
         return ResponseEntity.ok(service.getById(id));
     }
 
-    @PutMapping("/edit")
+    @PutMapping("/admin/catalog/category/edit")
     public ResponseEntity<String> update(@RequestBody CategoryDTO dto) throws NotFoundException, BadRequestException {
         service.update(dto);
         return new ResponseEntity<>("Se edito la categoria correctamente",HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/admin/catalog/category/delete")
     public ResponseEntity<String> deleteById(@RequestParam Long id) throws NotFoundException {
         service.deleteById(id);
         return new ResponseEntity<>("Se elimino la categoria", HttpStatus.OK);
