@@ -46,7 +46,6 @@ public class KeyCloakJwtConverter implements Converter<Jwt, Collection<GrantedAu
     Collection<GrantedAuthority> authorities = null;
     try {
       authorities = this.getGrantedAuthorities(source);
-      System.out.println("Authorities: " + authorities);
     } catch (JsonProcessingException e) {
       e.printStackTrace();
     }
