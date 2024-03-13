@@ -1,14 +1,14 @@
 version: "1"
 
 services:
-  db:
-    container_name: db
+  catalog-db:
+    container_name: catalog-db
     image: mysql:8
     ports:
       - 3306:3306
     environment:
       MYSQL_ROOT_PASSWORD: vinylSound
-      MYSQL_DATABASE: vinylSound
+      MYSQL_DATABASE: catalog
       MYSQL_USER: user-vinylSound
       MYSQL_PASSWORD: pass-vinylSound
       MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL: "true"
@@ -17,8 +17,28 @@ services:
       interval: 30s
       retries: 5
     volumes:
-      - mysql_data_volume:/var/lib/mysql
+      - catalog_data_volume:/var/lib/mysql
       - ./scripts:/docker-entrypoint-initdb.d
+    networks:
+      - vinylSound
+
+  order-db:
+    container_name: order-db
+    image: mysql:8
+    ports:
+      - 3307:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: vinylSound
+      MYSQL_DATABASE: order
+      MYSQL_USER: user-vinylSound
+      MYSQL_PASSWORD: pass-vinylSound
+      MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL: "true"
+    healthcheck:
+      test: "mysql -uuser-vinylSound -ppass-vinylSound -e 'SELECT 1;'"
+      interval: 30s
+      retries: 5
+    volumes:
+      - order_data_volume:/var/lib/mysql
     networks:
       - vinylSound
 
@@ -62,7 +82,8 @@ services:
       - keycloak
 
 volumes:
-  mysql_data_volume:
+  catalog_data_volume:
+  order_data_volume:
   postgres_data_volume:
 networks:
   vinylSound:
