@@ -18,7 +18,6 @@ public class CustomGatewayFilter extends GenericFilterBean {
     HttpServletRequest request = (HttpServletRequest) servletRequest;
     HttpServletResponse response = (HttpServletResponse) servletResponse;
     String proxyForwardedHostHeader = request.getHeader("X-Forwarded-Host");
-    System.out.println("proxyForwardedHostHeader: " + proxyForwardedHostHeader);
     if (proxyForwardedHostHeader == null || !proxyForwardedHostHeader.equals("localhost:8089")) {
       UnauthorizedException unauthorizedException = new UnauthorizedException("Unauthorized Access, you should pass through the API gateway");
       byte[] responseToSend = unauthorizedException.getMessage().getBytes();

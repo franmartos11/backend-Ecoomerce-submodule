@@ -32,8 +32,10 @@ public class SecurityConfig {
     // CATALOG
     "/catalog/brand/all", "/catalog/brand/{id}",
     "/catalog/category/all", "/catalog/category/{id}",
-    "/catalog/product/all", "/catalog/product/{id}", "/catalog/product/category={categoryId}",
-    "/catalog/product/subcategory={subcategoryId}", "/catalog/product/brand={brandId}",
+    "/catalog/product/all", "/catalog/product/{id}",
+    "/catalog/product/search",
+    "/catalog/product/category={categoryId}", "/catalog/product/subcategory={subcategoryId}",
+    "/catalog/product/brand={brandId}",
     "/catalog/subcategory/all", "/catalog/subcategory/{id}",
 
     // USER
