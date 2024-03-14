@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 
-@FeignClient(name = "user",url = "http://localhost:8082/user")
+@FeignClient(name = "user",url = "http://localhost:8082")
 public interface UserClientFeign {
-    @RequestMapping(method = RequestMethod.GET, value = "/{id}")
+    @RequestMapping(method = RequestMethod.GET, value = "/user/service/info/{id}")
     ResponseEntity<UserResponseDTO> findById(@PathVariable String id);
 }

@@ -2,24 +2,21 @@ package com.grupo5.vinylSound.order.service;
 
 import com.grupo5.vinylSound.order.exception.BadRequestException;
 import com.grupo5.vinylSound.order.exception.NotFoundException;
-import com.grupo5.vinylSound.order.model.Order;
-import com.grupo5.vinylSound.order.model.OrderProduct;
-import com.grupo5.vinylSound.order.model.PageRequestDTO;
-import com.grupo5.vinylSound.order.model.StatusOrder;
+import com.grupo5.vinylSound.order.model.*;
 import com.grupo5.vinylSound.order.model.dto.order.OrderRequestDTO;
 import com.grupo5.vinylSound.order.model.dto.order.OrderResponseDTO;
 import com.grupo5.vinylSound.order.model.dto.order.ProductOrderRequestDTO;
 import com.grupo5.vinylSound.order.model.dto.order.ProductOrderResponseDTO;
-import com.grupo5.vinylSound.order.repository.CatalogClientFeign;
-import com.grupo5.vinylSound.order.repository.OrderProductRepository;
-import com.grupo5.vinylSound.order.repository.OrderRepository;
-import com.grupo5.vinylSound.order.repository.UserClientFeign;
+import com.grupo5.vinylSound.order.model.dto.payment.PaymentDTO;
+import com.grupo5.vinylSound.order.model.dto.payment.PaymentProductDTO;
+import com.grupo5.vinylSound.order.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.support.MutableSortDefinition;
 import org.springframework.beans.support.PagedListHolder;
 import org.springframework.beans.support.PropertyComparator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -33,17 +30,46 @@ public class OrderService {
     private final CatalogClientFeign catalogClientFeign;
     private final OrderRepository repository;
     private final OrderProductRepository orderProductRepository;
+    private final PaymentClientFeign paymentClientFeign;
 
 
-    public void create(OrderRequestDTO dto) throws NotFoundException, BadRequestException {
-        if (userClientFeign.findById(dto.idUser()).getStatusCode().isError())
+    public ResponseEntity<?> create(OrderRequestDTO dto) throws NotFoundException, BadRequestException {
+        try{
+            userClientFeign.findById(dto.idUser());
+        }catch (Exception e) {
             throw new NotFoundException("No existe un usuario con id: " + dto.idUser());
+        }
+
+        List<PaymentProductDTO> productsPayment = new ArrayList<>();
+
+        for (ProductOrderRequestDTO productDTO: dto.products()) {
+            try{
+                var response = catalogClientFeign.findById(productDTO.idProduct());
+                var product = response.getBody();
+                assert product != null;
+                if (product.images().stream().findFirst().isPresent()) {
+                    var image = product.images().stream().findFirst().get();
+                    productsPayment.add(new PaymentProductDTO(product.id().toString(), product.title(), product.description(),
+                            image.url(), product.category(),
+                            productDTO.quantity(), product.price().doubleValue()));
+                }else {
+                    productsPayment.add(new PaymentProductDTO(product.id().toString(), product.title(), product.description(),
+                            null, product.category(),
+                            productDTO.quantity(), product.price().doubleValue()));
+                }
+            }catch (Exception e){
+                throw new BadRequestException("No existe un producto con el id: " + productDTO.idProduct());
+            }
+        }
 
         var order = mapToOrder(dto);
         repository.save(order);
         for (ProductOrderRequestDTO product: dto.products()) {
             orderProductRepository.save(mapToOrderProduct(order.getId(),product.idProduct(),product.quantity()));
         }
+
+
+        return paymentClientFeign.pay(new PaymentDTO(productsPayment));
     }
 
     public Page<OrderResponseDTO> getAll(PageRequestDTO pageRequestDTO){
@@ -69,9 +95,10 @@ public class OrderService {
     }
 
     public Page<OrderResponseDTO> getAllByIdUser(PageRequestDTO pageRequestDTO,String idUser) throws NotFoundException {
-        var response = userClientFeign.findById(idUser);
-        if (response.getStatusCode().isError()){
-            throw new NotFoundException("No hay registro de usuario con el id: " + idUser);
+        try{
+            userClientFeign.findById(idUser);
+        }catch (Exception e) {
+            throw new NotFoundException("No existe un usuario con id: " + idUser);
         }
 
         var pageable = pageRequestDTO.getPageable(pageRequestDTO);
@@ -96,6 +123,31 @@ public class OrderService {
         return new PageImpl<>(slice,new PageRequestDTO().getPageable(pageRequestDTO),listDTO.size());
     }
 
+    public void successful(Long id) throws NotFoundException {
+        var optionalOrder = repository.findById(id);
+
+        if (optionalOrder.isEmpty()){
+            throw new NotFoundException("No hay registro de pedido con el id: " + id);
+        }
+
+        var order = optionalOrder.get();
+        order.setStatusPayment(StatusPayment.SUCCESSFUL);
+        repository.save(order);
+    }
+
+    public void declined(Long id) throws NotFoundException {
+        var optionalOrder = repository.findById(id);
+
+        if (optionalOrder.isEmpty()){
+            throw new NotFoundException("No hay registro de pedido con el id: " + id);
+        }
+
+        var order = optionalOrder.get();
+        order.setStatusPayment(StatusPayment.DECLINED);
+        repository.save(order);
+    }
+
+
     private OrderProduct mapToOrderProduct(Long idOrder, Long idProduct, Integer quantity) throws BadRequestException {
         var response = catalogClientFeign.findById(idProduct);
         if (response.getStatusCode().isError()) {
@@ -106,9 +158,8 @@ public class OrderService {
         var order = new Order();
         order.setId(idOrder);
 
-        orderProduct.setId(null);
+        orderProduct.setId(new OrderProduct.OrderProductId(idOrder, idProduct));
         orderProduct.setOrder(order);
-        orderProduct.setIdProduct(idProduct);
         orderProduct.setQuantity(quantity);
         orderProduct.setSubtotal(Objects.requireNonNull(response.getBody()).price()*quantity);
 
@@ -120,7 +171,7 @@ public class OrderService {
 
         order.setIdUser(dto.idUser());
         order.setTotal(0f);
-        order.setStatusOrder(StatusOrder.PENDING);
+        order.setStatusPayment(StatusPayment.PENDING);
 
         for (ProductOrderRequestDTO productOrderRequestDTO : dto.products()) {
             var response = catalogClientFeign.findById(productOrderRequestDTO.idProduct());
@@ -139,9 +190,9 @@ public class OrderService {
     private OrderResponseDTO mapToOrderDTO(Order order) {
         List<ProductOrderResponseDTO> products = new ArrayList<>();
         for(OrderProduct orderProduct:order.getOrderProducts()) {
-            products.add(new ProductOrderResponseDTO(orderProduct.getIdProduct(),
+            products.add(new ProductOrderResponseDTO(orderProduct.getId().getIdProduct(),
                     orderProduct.getQuantity(), orderProduct.getSubtotal()));
         }
-        return new OrderResponseDTO(order.getId(),order.getIdUser(),products,order.getTotal(), order.getStatusOrder());
+        return new OrderResponseDTO(order.getId(),order.getIdUser(),products,order.getTotal(), order.getStatusPayment());
     }
 }

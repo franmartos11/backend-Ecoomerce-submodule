@@ -1,7 +1,5 @@
 package com.grupo5.vinylsound.payment.model;
 
-import java.math.BigDecimal;
-
 public record Product (
   String id,
   String title,

@@ -13,28 +13,27 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "orders_products")
-public class OrderProduct {
+@Table(name = "carts_products")
+public class CartProduct {
     @EmbeddedId
-    private OrderProduct.OrderProductId id = new OrderProduct.OrderProductId();
+    private CartProductId id = new CartProductId();
 
     @ManyToOne
-    @JoinColumn(name = "order_id", nullable = false, updatable = false, insertable = false)
-    private Order order;
+    @JoinColumn(name = "cart_id", nullable = false, updatable = false, insertable = false)
+    private Cart cart;
 
     @Column(nullable = false)
     private Integer quantity;
-
-    @Column(nullable = false)
-    private Float subtotal;
 
     @Getter
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
     @Embeddable
-    public static class OrderProductId implements Serializable {
-        private Long order_id;
+    public static class CartProductId implements Serializable {
+        private Long cart_id;
         private Long idProduct;
     }
+
 }
+

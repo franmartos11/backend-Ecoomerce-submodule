@@ -12,5 +12,7 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct,Long>
 
     @Query("SELECT op FROM OrderProduct op WHERE op.order.id = :idOrder")
     List<OrderProduct> findAllByOrderId(Long idOrder);
+
+
 }
 

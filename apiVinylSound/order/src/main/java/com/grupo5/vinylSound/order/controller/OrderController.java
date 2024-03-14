@@ -13,20 +13,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
+
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/order")
+@RequestMapping
 public class OrderController {
     private final OrderService service;
 
-    @PostMapping("/create")
-    public ResponseEntity<String> create(@RequestBody OrderRequestDTO dto)
+    @PostMapping("/user/order/create")
+    public ResponseEntity<?> create(@RequestBody OrderRequestDTO dto)
             throws BadRequestException, NotFoundException {
-        service.create(dto);
-        return new ResponseEntity<>("Pedido creado exitosamente", HttpStatus.CREATED);
+        return service.create(dto);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/user/order/all")
     public ResponseEntity<Page<OrderResponseDTO>> getAll(@RequestParam("page") Integer page,
                                                          @RequestParam("size") Integer size,
                                                          @RequestParam("sort") Sort.Direction sort,
@@ -34,7 +35,7 @@ public class OrderController {
         return ResponseEntity.ok(service.getAll(new PageRequestDTO(page,size,sort,column)));
     }
 
-    @GetMapping("/all/{idUser}")
+    @GetMapping("/user/order/all/{idUser}")
     public ResponseEntity<Page<OrderResponseDTO>> getAllByIdUser(@RequestParam("page") Integer page,
                                                                  @RequestParam("size") Integer size,
                                                                  @RequestParam("sort") Sort.Direction sort,
@@ -42,5 +43,19 @@ public class OrderController {
                                                                  @PathVariable String idUser)
             throws NotFoundException {
         return ResponseEntity.ok(service.getAllByIdUser(new PageRequestDTO(page,size,sort,column),idUser));
+    }
+
+    @Transactional
+    @PutMapping("/user/order/successful={id}")
+    public ResponseEntity<String> successful(@PathVariable Long id) throws NotFoundException {
+        service.successful(id);
+        return new ResponseEntity<>("Se realizó correctamente el pago del pedido  " + id,HttpStatus.OK);
+    }
+
+    @Transactional
+    @PutMapping("/user/order/declined={id}")
+    public ResponseEntity<String> declined(@PathVariable Long id) throws NotFoundException {
+        service.declined(id);
+        return new ResponseEntity<>("Se rechazo el pago del pedido  " + id,HttpStatus.OK);
     }
 }
