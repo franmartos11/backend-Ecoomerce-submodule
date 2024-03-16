@@ -1,4 +1,4 @@
-package com.grupo5.vinylSound.order.repository;
+package com.grupo5.vinylSound.order.repository.feign;
 
 import com.grupo5.vinylSound.order.model.dto.product.ProductResponseDTO;
 import org.springframework.cloud.openfeign.FeignClient;

@@ -61,6 +61,7 @@ CREATE TABLE IF NOT EXISTS `products` (
   `description` VARCHAR(255) NOT NULL,
   `price` FLOAT NOT NULL,
   `title` VARCHAR(150) NOT NULL,
+  `quantity_sells` INT NOT NULL,
   `id_brand` BIGINT NULL DEFAULT NULL,
   `id_subcategory` BIGINT NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -137,19 +138,19 @@ INSERT INTO `brands` (name,url) VALUES ("Valencia","https://res.cloudinary.com/d
 -- -----------------------------------------------------
 -- Table `vinylSound`.`products`
 -- -----------------------------------------------------
-INSERT INTO `products`(title,price,description,id_subcategory,id_brand) VALUES (
-"Miley Cirus - Plastic Hearts",18200,"TRACKS 1 WTF Do I Know 2 Plastic Hearts 3 Angels Like You 4 Prisoner Feat. Dua Lipa 5 Gimme What I Want 6 Night Crawling Feat. Billy Idol 7 Midnight Sky 8 High 9 Hate Me 10 Bad Karma Feat. Joan Jett 11 Never Be Me 12 Golden G String",4,1);
+INSERT INTO `products`(title,price,description,quantity_sells,id_subcategory,id_brand) VALUES (
+"Miley Cirus - Plastic Hearts",18200,"TRACKS 1 WTF Do I Know 2 Plastic Hearts 3 Angels Like You 4 Prisoner Feat. Dua Lipa 5 Gimme What I Want 6 Night Crawling Feat. Billy Idol 7 Midnight Sky 8 High 9 Hate Me 10 Bad Karma Feat. Joan Jett 11 Never Be Me 12 Golden G String",50,4,1);
 
-INSERT INTO `products`(title,price,description,id_subcategory,id_brand) VALUES (
-"Taylor Swift - 1989",15200,"TRACKS 1 Welcome to New York 2 Blank Space 3 Style 4 Out of the Woods 5 All You Had to Do Was Stay 6 Shake It Off 7 I Wish You Would 8 Bad Blood 9 Wildest Dreams 10 How You Get the Girl 11 This Love 12 I Know Places 13 Clean",4,2);
+INSERT INTO `products`(title,price,description,quantity_sells,id_subcategory,id_brand) VALUES (
+"Taylor Swift - 1989",15200,"TRACKS 1 Welcome to New York 2 Blank Space 3 Style 4 Out of the Woods 5 All You Had to Do Was Stay 6 Shake It Off 7 I Wish You Would 8 Bad Blood 9 Wildest Dreams 10 How You Get the Girl 11 This Love 12 I Know Places 13 Clean",70,4,2);
 
-INSERT INTO `products`(title,price,description,id_subcategory,id_brand) VALUES ("Shakira - El Dorado",12200,"TRACKS 1 Me Enamoré 2 Nada 3 Chantaje 4 When a Woman 5 Amarillo 6 Perro Fiel 7 Trap - Shakira 8 Comme moi 9 Coconut Tree 10 La Bicicleta 11 Deja vu 12 What We Said 13 Toneladas",4,3);
+INSERT INTO `products`(title,price,description,quantity_sells,id_subcategory,id_brand) VALUES ("Shakira - El Dorado",12200,"TRACKS 1 Me Enamoré 2 Nada 3 Chantaje 4 When a Woman 5 Amarillo 6 Perro Fiel 7 Trap - Shakira 8 Comme moi 9 Coconut Tree 10 La Bicicleta 11 Deja vu 12 What We Said 13 Toneladas",20,4,3);
 
-INSERT INTO `products`(title,price,description,id_subcategory,id_brand) VALUES ("Gustavo Cerati - Bocanada",55000,"TRACKS 1 Tabú 2 Engaña 3 Bocanada 4 Puente 5 Río Babel 6 Beautiful 7 Perdonar es divino 8 Verbo Carne 9 Raíz 10 Y el humo está en foco... 11 Paseo inmoral 12 Aquí & ahora (Los primeros tres minutos) 13 Aquí & ahora (Y después) 14 Alma 15 Balsa",1,4);
+INSERT INTO `products`(title,price,description,quantity_sells,id_subcategory,id_brand) VALUES ("Gustavo Cerati - Bocanada",55000,"TRACKS 1 Tabú 2 Engaña 3 Bocanada 4 Puente 5 Río Babel 6 Beautiful 7 Perdonar es divino 8 Verbo Carne 9 Raíz 10 Y el humo está en foco... 11 Paseo inmoral 12 Aquí & ahora (Los primeros tres minutos) 13 Aquí & ahora (Y después) 14 Alma 15 Balsa",200,1,4);
 
-INSERT INTO `products`(title,price,description,id_subcategory,id_brand) VALUES ("Guitarra Clasica Valencia Vc204 Natural",117000," Guitarra Clásica Valencia Tamaño: 4/4 Fabricada en Indonesia. Una guitarra con gran volumen y claridad. Un instrumento que aporta un amplia gama de tonos para crear diferentes clases de timbre y color en el sonido.",7,5);
+INSERT INTO `products`(title,price,description,quantity_sells,id_subcategory,id_brand) VALUES ("Guitarra Clasica Valencia Vc204 Natural",11700," Guitarra Clásica Valencia Tamaño: 4/4 Fabricada en Indonesia. Una guitarra con gran volumen y claridad. Un instrumento que aporta un amplia gama de tonos para crear diferentes clases de timbre y color en el sonido.",15,7,5);
 
-INSERT INTO `products`(title,price,description,id_subcategory,id_brand) VALUES ("Guitarra Clásica Valencia Vc104 Natural",112000,"La Serie Valencia 100 nos ofrece una guitarra de cuerda de nylon con todas las características, que es lo suficientemente asequible para cualquier guitarrista. Su longitud de la escala del mástil le permite tocar con el estilo clásico.",7,5);
+INSERT INTO `products`(title,price,description,quantity_sells,id_subcategory,id_brand) VALUES ("Guitarra Clásica Valencia Vc104 Natural",11200,"La Serie Valencia 100 nos ofrece una guitarra de cuerda de nylon con todas las características, que es lo suficientemente asequible para cualquier guitarrista. Su longitud de la escala del mástil le permite tocar con el estilo clásico.",5,7,5);
 
 -- -----------------------------------------------------
 -- Table `vinylSound`.`images`

@@ -30,6 +30,9 @@ public class Product {
     @Column(nullable = false)
     private String description;
 
+    @Column(nullable = false,name = "quantity_sells")
+    private Integer quantitySells;
+
     @OneToMany(mappedBy = "product",cascade = CascadeType.REMOVE)
     @JsonIgnore
     private Set<Image> images = new HashSet<>();

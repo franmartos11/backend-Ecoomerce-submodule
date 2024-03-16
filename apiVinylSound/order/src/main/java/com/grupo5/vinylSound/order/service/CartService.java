@@ -10,8 +10,8 @@ import com.grupo5.vinylSound.order.model.dto.cart.CartRequestDTO;
 import com.grupo5.vinylSound.order.model.dto.cart.CartResponseDTO;
 import com.grupo5.vinylSound.order.repository.CartProductRepository;
 import com.grupo5.vinylSound.order.repository.CartRepository;
-import com.grupo5.vinylSound.order.repository.CatalogClientFeign;
-import com.grupo5.vinylSound.order.repository.UserClientFeign;
+import com.grupo5.vinylSound.order.repository.feign.CatalogClientFeign;
+import com.grupo5.vinylSound.order.repository.feign.UserClientFeign;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

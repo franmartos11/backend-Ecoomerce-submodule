@@ -5,6 +5,7 @@ import com.grupo5.vinylSound.catalog.exception.NotFoundException;
 import com.grupo5.vinylSound.catalog.model.dto.PageRequestDTO;
 import com.grupo5.vinylSound.catalog.model.dto.product.ProductDTO;
 import com.grupo5.vinylSound.catalog.model.dto.product.ProductResponseDTO;
+import com.grupo5.vinylSound.catalog.model.dto.product.ProductSalesDTO;
 import com.grupo5.vinylSound.catalog.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -72,6 +73,61 @@ public class ProductController {
                                                                         @PathVariable Long brandId)
             throws NotFoundException {
         return ResponseEntity.ok(service.filterByBrand(new PageRequestDTO(page,size,sort,column),brandId));
+    }
+
+    @GetMapping("/admin/catalog/product/topSells/all")
+    public ResponseEntity<Page<ProductSalesDTO>> findTopSellingProducts(@RequestParam(value = "page", defaultValue = "0")
+                                                                                Integer page,
+                                                                        @RequestParam(value = "size", defaultValue = "10")
+                                                                            Integer size) {
+        return ResponseEntity.ok(service.findTopSellingProducts(page,size));
+    }
+
+    @GetMapping("/admin/catalog/product/topSells/category={categoryId}")
+    public ResponseEntity<Page<ProductSalesDTO>> findTopSellingProductsByCategory(@RequestParam(value = "page", defaultValue = "0")
+                                                                                          Integer page,
+                                                                                      @RequestParam(value = "size", defaultValue = "10")
+                                                                                          Integer size,
+                                                                                     @PathVariable Long categoryId)
+            throws NotFoundException {
+        return ResponseEntity.ok(service.findTopSellingProductsByCategory(categoryId,page,size));
+    }
+
+    @GetMapping("/admin/catalog/product/topSells/subcategory={subcategoryId}")
+    public ResponseEntity<Page<ProductSalesDTO>> findTopSellingProductsBySubcategory(@RequestParam(value = "page", defaultValue = "0")
+                                                                                            Integer page,
+                                                                                        @RequestParam(value = "size", defaultValue = "10")
+                                                                                            Integer size,
+                                                                                     @PathVariable Long subcategoryId)
+            throws NotFoundException {
+        return ResponseEntity.ok(service.findTopSellingProductsBySubcategory(subcategoryId,page,size));
+    }
+
+    @GetMapping("/admin/catalog/product/topSells/brand={brandId}")
+    public ResponseEntity<Page<ProductSalesDTO>> findTopSellingProductsByBrand(@RequestParam(value = "page", defaultValue = "0")
+                                                                                      Integer page,
+                                                                                  @RequestParam(value = "size", defaultValue = "10")
+                                                                                      Integer size,
+                                                                                        @PathVariable Long brandId)
+            throws NotFoundException {
+        return ResponseEntity.ok(service.findTopSellingProductsByBrand(brandId,page,size));
+    }
+
+    @GetMapping("/admin/catalog/product/zeroSales")
+    public ResponseEntity<Page<ProductSalesDTO>> findProductsWithZeroSells(@RequestParam(value = "page", defaultValue = "0")
+                                                                                  Integer page,
+                                                                              @RequestParam(value = "size", defaultValue = "10")
+                                                                                  Integer size) {
+        return ResponseEntity.ok(service.findProductsWithZeroSells(page, size));
+    }
+
+    @GetMapping("/admin/catalog/product/SalesLessThan={number}")
+    public ResponseEntity<Page<ProductSalesDTO>> findSalesProductsLessThan(@RequestParam(value = "page", defaultValue = "0")
+                                                                        Integer page,
+                                                                        @RequestParam(value = "size", defaultValue = "10")
+                                                                        Integer size,
+                                                                        @PathVariable Integer number) {
+        return ResponseEntity.ok(service.findSalesProductsLessThan(page,size,number));
     }
 
     @PutMapping("/admin/catalog/product/edit")

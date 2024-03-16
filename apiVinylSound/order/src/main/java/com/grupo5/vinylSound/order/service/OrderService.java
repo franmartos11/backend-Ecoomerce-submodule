@@ -1,5 +1,6 @@
 package com.grupo5.vinylSound.order.service;
 
+import com.grupo5.vinylSound.order.event.OrderEventProducer;
 import com.grupo5.vinylSound.order.exception.BadRequestException;
 import com.grupo5.vinylSound.order.exception.NotFoundException;
 import com.grupo5.vinylSound.order.model.*;
@@ -10,6 +11,9 @@ import com.grupo5.vinylSound.order.model.dto.order.ProductOrderResponseDTO;
 import com.grupo5.vinylSound.order.model.dto.payment.PaymentDTO;
 import com.grupo5.vinylSound.order.model.dto.payment.PaymentProductDTO;
 import com.grupo5.vinylSound.order.repository.*;
+import com.grupo5.vinylSound.order.repository.feign.CatalogClientFeign;
+import com.grupo5.vinylSound.order.repository.feign.PaymentClientFeign;
+import com.grupo5.vinylSound.order.repository.feign.UserClientFeign;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.support.MutableSortDefinition;
 import org.springframework.beans.support.PagedListHolder;
@@ -31,6 +35,7 @@ public class OrderService {
     private final OrderRepository repository;
     private final OrderProductRepository orderProductRepository;
     private final PaymentClientFeign paymentClientFeign;
+    private final OrderEventProducer eventProducer;
 
 
     public ResponseEntity<?> create(OrderRequestDTO dto) throws NotFoundException, BadRequestException {
@@ -133,6 +138,8 @@ public class OrderService {
         var order = optionalOrder.get();
         order.setStatusPayment(StatusPayment.SUCCESSFUL);
         repository.save(order);
+        var dto = mapToOrderDTO(order);
+        eventProducer.increaseQuantitySales(dto.products());
     }
 
     public void declined(Long id) throws NotFoundException {
