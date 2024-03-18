@@ -8,6 +8,7 @@ import com.grupo5.vinylSound.order.model.CartProduct;
 import com.grupo5.vinylSound.order.model.dto.cart.CartProductDTO;
 import com.grupo5.vinylSound.order.model.dto.cart.CartRequestDTO;
 import com.grupo5.vinylSound.order.model.dto.cart.CartResponseDTO;
+import com.grupo5.vinylSound.order.model.dto.product.ProductResponseDTO;
 import com.grupo5.vinylSound.order.repository.CartProductRepository;
 import com.grupo5.vinylSound.order.repository.CartRepository;
 import com.grupo5.vinylSound.order.repository.feign.CatalogClientFeign;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
@@ -66,7 +68,8 @@ public class CartService {
 
         List<CartProductDTO> listDTO = new ArrayList<>();
         for (CartProduct cartProduct : listCartProduct) {
-            listDTO.add(mapToCartProductDTO(cartProduct));
+            var product = catalogClientFeign.findById(cartProduct.getId().getIdProduct());
+            listDTO.add(mapToCartProductDTO(cartProduct, Objects.requireNonNull(product.getBody())));
         }
 
         return new CartResponseDTO(cart.get().getId(), idUser,listDTO);
@@ -94,8 +97,10 @@ public class CartService {
         }
     }
 
-    private CartProductDTO mapToCartProductDTO(CartProduct cartProduct) {
-        return new CartProductDTO(cartProduct.getId().getIdProduct(), cartProduct.getQuantity());
+    private CartProductDTO mapToCartProductDTO(CartProduct cartProduct, ProductResponseDTO product) {
+        return new CartProductDTO(cartProduct.getId().getIdProduct(),cartProduct.getQuantity(),
+                product.title(),product.price(),product.description(),product.images(),product.subcategory(),product.category(),
+                product.brand());
     }
 
     private Cart mapToCart(String userId){
