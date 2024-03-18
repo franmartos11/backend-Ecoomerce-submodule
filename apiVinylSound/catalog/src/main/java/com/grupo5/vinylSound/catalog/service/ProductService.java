@@ -8,8 +8,10 @@ import com.grupo5.vinylSound.catalog.model.SubCategory;
 import com.grupo5.vinylSound.catalog.model.dto.PageRequestDTO;
 import com.grupo5.vinylSound.catalog.model.dto.image.ImageProductDTO;
 import com.grupo5.vinylSound.catalog.model.dto.image.ImageDTO;
+import com.grupo5.vinylSound.catalog.model.dto.order.ProductOrderResponseDTO;
 import com.grupo5.vinylSound.catalog.model.dto.product.ProductDTO;
 import com.grupo5.vinylSound.catalog.model.dto.product.ProductResponseDTO;
+import com.grupo5.vinylSound.catalog.model.dto.product.ProductSalesDTO;
 import com.grupo5.vinylSound.catalog.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.support.MutableSortDefinition;
@@ -17,6 +19,7 @@ import org.springframework.beans.support.PagedListHolder;
 import org.springframework.beans.support.PropertyComparator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -175,7 +178,6 @@ public class ProductService {
         var products = repository.findByBrandId(pageable,idBrand);
 
         if (products.isEmpty()) {
-
             return Page.empty();
         }
 
@@ -194,6 +196,115 @@ public class ProductService {
         PropertyComparator.sort(slice,mutable);
 
         return new PageImpl<>(slice,new PageRequestDTO().getPageable(pageRequestDTO),products.getTotalElements());
+    }
+
+    public Page<ProductSalesDTO> findTopSellingProducts(Integer page, Integer size) {
+        var pageable = PageRequest.of(page, size);
+        var products = repository.findTopSellingProducts(pageable);
+
+        if (products.isEmpty()) {
+            return Page.empty();
+        }
+
+        List<ProductSalesDTO> listDTO = new ArrayList<>();
+        for (Product product : products) {
+            listDTO.add(mapToDTOSales(product));
+        }
+        return new PageImpl<>(listDTO,pageable,products.getTotalElements());
+    }
+
+
+
+    public Page<ProductSalesDTO> findTopSellingProductsByCategory(Long categoryId,Integer page, Integer size) throws NotFoundException {
+        if (categoryRepository.findById(categoryId).isEmpty()){
+            throw new NotFoundException("No hay registro de categoria con el id: " + categoryId);
+        }
+
+        var pageable = PageRequest.of(page, size);
+        var products = repository.findTopSellingProductsByCategory(categoryId,pageable);
+
+
+        if (products.isEmpty()) {
+            return Page.empty();
+        }
+
+        List<ProductSalesDTO> listDTO = new ArrayList<>();
+        for (Product product : products) {
+            listDTO.add(mapToDTOSales(product));
+        }
+
+        return new PageImpl<>(listDTO,pageable,products.getTotalElements());
+    }
+
+    public Page<ProductSalesDTO> findTopSellingProductsBySubcategory(Long subCategoryId,Integer page, Integer size) throws NotFoundException {
+        if (subCategoryRepository.findById(subCategoryId).isEmpty()){
+            throw new NotFoundException("No hay registro de subcategoria con el id: " + subCategoryId);
+        }
+
+        var pageable = PageRequest.of(page, size);
+        var products = repository.findTopSellingProductsBySubcategory(subCategoryId,pageable);
+
+        if (products.isEmpty()) {
+            return Page.empty();
+        }
+
+        List<ProductSalesDTO> listDTO = new ArrayList<>();
+        for (Product product : products) {
+            listDTO.add(mapToDTOSales(product));
+        }
+
+        return new PageImpl<>(listDTO,pageable,products.getTotalElements());
+    }
+
+    public Page<ProductSalesDTO> findTopSellingProductsByBrand(Long brandId,Integer page, Integer size) throws NotFoundException {
+        if (subCategoryRepository.findById(brandId).isEmpty()){
+            throw new NotFoundException("No hay registro de marca con el id: " + brandId);
+        }
+
+        var pageable = PageRequest.of(page, size);
+        var products = repository.findTopSellingProductsByBrand(brandId,pageable);
+
+        if (products.isEmpty()) {
+            return Page.empty();
+        }
+
+        List<ProductSalesDTO> listDTO = new ArrayList<>();
+        for (Product product : products) {
+            listDTO.add(mapToDTOSales(product));
+        }
+
+        return new PageImpl<>(listDTO,pageable,products.getTotalElements());
+    }
+
+    public Page<ProductSalesDTO> findProductsWithZeroSells(Integer page, Integer size) {
+        var pageable = PageRequest.of(page, size);
+        var products = repository.findProductsWithZeroSales(pageable);
+
+        if (products.isEmpty()) {
+            return Page.empty();
+        }
+
+        List<ProductSalesDTO> listDTO = new ArrayList<>();
+        for (Product product : products) {
+            listDTO.add(mapToDTOSales(product));
+        }
+        return new PageImpl<>(listDTO,pageable,products.getTotalElements());
+    }
+
+    public Page<ProductSalesDTO> findSalesProductsLessThan(Integer page, Integer size,Integer number) {
+        var pageable = PageRequest.of(page, size);
+        var products = repository.findSalesProductsLessThan(number,pageable);
+
+        if (products.isEmpty()) {
+            return Page.empty();
+        }
+
+        List<ProductSalesDTO> listDTO = new ArrayList<>();
+        for (Product product : products) {
+            listDTO.add(mapToDTOSales(product));
+        }
+
+        return new PageImpl<>(listDTO,pageable,products.getTotalElements());
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////
@@ -225,6 +336,18 @@ public class ProductService {
 
     }
 
+    public void increaseSell(List<ProductOrderResponseDTO> products){
+        for (ProductOrderResponseDTO dto:products) {
+            var optional = repository.findById(dto.idProduct());
+            if (optional.isPresent()) {
+                var product = optional.get();
+                var newQuantity = product.getQuantitySells() + dto.quantity();
+                product.setQuantitySells(newQuantity);
+                repository.save(product);
+            }
+        }
+    }
+
     public void deleteById(Long id) throws NotFoundException {
         var product = repository.findById(id);
         if(product.isEmpty())
@@ -241,6 +364,7 @@ public class ProductService {
         product.setTitle(dto.title());
         product.setPrice(dto.price());
         product.setDescription(dto.description());
+        product.setQuantitySells(0);
         var subcategory = new SubCategory();
         subcategory.setId(dto.idSubcategory());
         product.setSubcategory(subcategory);
@@ -252,6 +376,14 @@ public class ProductService {
         return product;
     }
 
+    private ProductSalesDTO mapToDTOSales(Product product){
+        return new ProductSalesDTO(
+                product.getId(), product.getTitle(), product.getPrice(),
+                product.getQuantitySells(),product.getSubcategory().getName(),
+                product.getSubcategory().getCategory().getName(),product.getBrand().getName()
+        );
+    }
+
     private ProductResponseDTO mapToDTO(Product product,List<ImageDTO> images){
         Set<ImageDTO> listDto = new HashSet<>();
         for (ImageDTO image: images) {
@@ -259,7 +391,7 @@ public class ProductService {
         }
         return new ProductResponseDTO(
                 product.getId(), product.getTitle(), product.getPrice(),
-                product.getDescription(), listDto,product.getSubcategory().getName(),
+                product.getDescription(),listDto,product.getSubcategory().getName(),
                 product.getSubcategory().getCategory().getName(),product.getBrand().getName()
         );
     }

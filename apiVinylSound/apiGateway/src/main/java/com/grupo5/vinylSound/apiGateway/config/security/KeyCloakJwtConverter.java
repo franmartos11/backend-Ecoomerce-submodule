@@ -1,4 +1,4 @@
-package com.grupo5.vinylSound.apiGateway.security;
+package com.grupo5.vinylSound.apiGateway.config.security;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;

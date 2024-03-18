@@ -43,16 +43,17 @@ services:
       - vinylSound
 
   postgres:
+    container_name: postgres
     image: postgres:14-alpine
     restart: unless-stopped
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "keycloak" ]
     environment:
-      POSTGRES_DB: keycloak
-      POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: vinylSoundKeycloak
+      POSTGRES_USER: user-vinylSound
+      POSTGRES_PASSWORD: pass-vinylSound
     volumes:
-      - postgres_data_volume:/var/lib/postgres
+      - postgres_data_volume:/var/lib/postgresql/data
     networks:
       - keycloak
 
@@ -67,10 +68,10 @@ services:
     depends_on:
       - postgres
     environment:
-      DB_VENDOR: MYSQL
-      DB_ADDR: db
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
       DB_DATABASE: vinylSoundKeycloak
-      DB_PORT: 5433
+      DB_PORT: 5432
       DB_USER: user-vinylSound
       DB_PASSWORD: pass-vinylSound
       KEYCLOAK_ADMIN: vinylsoundinformation@gmail.com
@@ -81,10 +82,24 @@ services:
     networks:
       - keycloak
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    hostname: localhost
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    expose:
+      - 15672
+      - 5672
+    volumes:
+      - rabbitmq_data_volume:/var/lib/rabbitmq
+
 volumes:
   catalog_data_volume:
   order_data_volume:
   postgres_data_volume:
+  rabbitmq_data_volume:
 networks:
   vinylSound:
     driver: bridge

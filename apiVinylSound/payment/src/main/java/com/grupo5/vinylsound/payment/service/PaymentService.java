@@ -19,7 +19,7 @@ import java.util.List;
 @Service
 public class PaymentService {
 
-  @Value("${MERCADO_PAGO_ACCESS_TOKEN}")
+  @Value("${mercado.pago.access.token}")
   private String mercadoPagoAccessToken;
 
   private void setConnectionMercadoPago() {

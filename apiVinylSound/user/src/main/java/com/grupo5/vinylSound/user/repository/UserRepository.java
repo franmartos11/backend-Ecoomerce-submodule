@@ -15,8 +15,6 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Repository;
 import org.keycloak.admin.client.Keycloak;
 
-
-import javax.ws.rs.core.Response;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,21 +35,15 @@ public class UserRepository {
         }
 
         var rol = roleResource.get("user").toRepresentation();
-        Response response;
-        try {
-            response = userResource.create(mapToRepresentation(user));
-        } catch (Exception e) {
-            throw new InternalServerErrorException("Se ha producido un error al crear el nuevo usuario: " + user.getEmail());
-        }
-
+        var response = userResource.create(mapToRepresentation(user));
         var path = response.getLocation().getPath();
         var userId = path.substring(path.lastIndexOf("/") + 1);
 
         if (response.getStatus() ==201){
             userResource.get(userId).roles().realmLevel().add(List.of(rol));
-            //userResource.get(userId).sendVerifyEmail(); nunca obtengo respuesta del servidor
+            userResource.get(userId).sendVerifyEmail();
         }else {
-            throw new InternalServerErrorException("Se ha producido un error 2 al crear el nuevo usuario: " + user.getEmail());
+            throw new InternalServerErrorException("Se ha producido un error al crear el nuevo usuario: " + user.getEmail());
         }
     }
 
@@ -96,7 +88,6 @@ public class UserRepository {
         }
         var user = userResource.get(representation.getId());
         user.executeActionsEmail(List.of("UPDATE_PASSWORD"));
-
     }
 
     public void resetPassword(String password,String id) throws NotFoundException {
