@@ -23,6 +23,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -30,6 +31,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Service
 public class OrderService {
+    private final EmailService emailService;
     private final UserClientFeign userClientFeign;
     private final CatalogClientFeign catalogClientFeign;
     private final OrderRepository repository;
@@ -128,7 +130,7 @@ public class OrderService {
         return new PageImpl<>(slice,new PageRequestDTO().getPageable(pageRequestDTO),listDTO.size());
     }
 
-    public void successful(Long id) throws NotFoundException {
+    public void successful(Long id) throws NotFoundException, MessagingException {
         var optionalOrder = repository.findById(id);
 
         if (optionalOrder.isEmpty()){
@@ -140,6 +142,8 @@ public class OrderService {
         repository.save(order);
         var dto = mapToOrderDTO(order);
         eventProducer.increaseQuantitySales(dto.products());
+        emailService.sendEmailToUserOrder(order,order.getOrderProducts());
+        emailService.sendEmailToAdminOrder(order,order.getOrderProducts());
     }
 
     public void declined(Long id) throws NotFoundException {
