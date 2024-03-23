@@ -3,9 +3,7 @@ package com.grupo5.vinylSound.catalog.controller;
 import com.grupo5.vinylSound.catalog.exception.BadRequestException;
 import com.grupo5.vinylSound.catalog.exception.NotFoundException;
 import com.grupo5.vinylSound.catalog.model.dto.PageRequestDTO;
-import com.grupo5.vinylSound.catalog.model.dto.product.ProductDTO;
-import com.grupo5.vinylSound.catalog.model.dto.product.ProductResponseDTO;
-import com.grupo5.vinylSound.catalog.model.dto.product.ProductSalesDTO;
+import com.grupo5.vinylSound.catalog.model.dto.product.*;
 import com.grupo5.vinylSound.catalog.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,6 +11,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.transaction.Transactional;
+import java.util.List;
 
 
 @RequiredArgsConstructor
@@ -76,10 +77,18 @@ public class ProductController {
     }
 
     @GetMapping("/admin/catalog/product/topSells/all")
-    public ResponseEntity<Page<ProductSalesDTO>> findTopSellingProducts(@RequestParam(value = "page", defaultValue = "0")
+    public ResponseEntity<Page<ProductSalesDTO>> findTopSellingProductsAdmin(@RequestParam(value = "page", defaultValue = "0")
                                                                                 Integer page,
                                                                         @RequestParam(value = "size", defaultValue = "10")
                                                                             Integer size) {
+        return ResponseEntity.ok(service.findTopSellingProductsAdmin(page,size));
+    }
+
+    @GetMapping("/api/catalog/product/topSells/all")
+    public ResponseEntity<Page<ProductSalesImageDTO>> findTopSellingProducts(@RequestParam(value = "page", defaultValue = "0")
+                                                                        Integer page,
+                                                                             @RequestParam(value = "size", defaultValue = "10")
+                                                                        Integer size) {
         return ResponseEntity.ok(service.findTopSellingProducts(page,size));
     }
 
@@ -135,6 +144,15 @@ public class ProductController {
         service.update(dto);
         return new ResponseEntity<>("Se edito el producto correctamente",HttpStatus.OK);
     }
+
+
+    @PutMapping("/user/catalog/product/decreaseStock")
+    public ResponseEntity<String> decreaseStock(@RequestBody List<ProductStockRequestDTO> products)
+            throws NotFoundException, BadRequestException {
+        service.decreaseStock(products);
+        return new ResponseEntity<>("Se realizó correctamente la modificacion de stock",HttpStatus.OK);
+    }
+
     @DeleteMapping("/admin/catalog/product/delete")
     public ResponseEntity<String> deleteById(@RequestParam Long id) throws NotFoundException {
         service.deleteById(id);

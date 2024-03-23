@@ -9,9 +9,7 @@ import com.grupo5.vinylSound.catalog.model.dto.PageRequestDTO;
 import com.grupo5.vinylSound.catalog.model.dto.image.ImageProductDTO;
 import com.grupo5.vinylSound.catalog.model.dto.image.ImageDTO;
 import com.grupo5.vinylSound.catalog.model.dto.order.ProductOrderResponseDTO;
-import com.grupo5.vinylSound.catalog.model.dto.product.ProductDTO;
-import com.grupo5.vinylSound.catalog.model.dto.product.ProductResponseDTO;
-import com.grupo5.vinylSound.catalog.model.dto.product.ProductSalesDTO;
+import com.grupo5.vinylSound.catalog.model.dto.product.*;
 import com.grupo5.vinylSound.catalog.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.support.MutableSortDefinition;
@@ -55,8 +53,8 @@ public class ProductService {
             throw new BadRequestException("No existe una marca con el id: " + dto.idBrand());
         }
 
-        var persist = repository.save(mapToProduct(new ProductDTO(null, dto.title(), dto.price(), dto.description(),dto.idSubcategory(),
-                dto.idBrand(),null)));
+        var persist = repository.save(mapToProduct(new ProductDTO(null, dto.title(), dto.price(), dto.description(),
+                dto.stock(), dto.idSubcategory(), dto.idBrand(),null)));
 
         for (ImageProductDTO each:dto.images()) {
             imageService.createImage(new ImageDTO(null,each.name(), each.url(), persist.getId()));
@@ -198,7 +196,7 @@ public class ProductService {
         return new PageImpl<>(slice,new PageRequestDTO().getPageable(pageRequestDTO),products.getTotalElements());
     }
 
-    public Page<ProductSalesDTO> findTopSellingProducts(Integer page, Integer size) {
+    public Page<ProductSalesDTO> findTopSellingProductsAdmin(Integer page, Integer size) {
         var pageable = PageRequest.of(page, size);
         var products = repository.findTopSellingProducts(pageable);
 
@@ -209,6 +207,22 @@ public class ProductService {
         List<ProductSalesDTO> listDTO = new ArrayList<>();
         for (Product product : products) {
             listDTO.add(mapToDTOSales(product));
+        }
+        return new PageImpl<>(listDTO,pageable,products.getTotalElements());
+    }
+
+    public Page<ProductSalesImageDTO> findTopSellingProducts(Integer page, Integer size) {
+        var pageable = PageRequest.of(page, size);
+        var products = repository.findTopSellingProducts(pageable);
+
+        if (products.isEmpty()) {
+            return Page.empty();
+        }
+
+        List<ProductSalesImageDTO> listDTO = new ArrayList<>();
+        for (Product product : products) {
+            var images = imageService.getAllByIdProduct(product.getId());
+            listDTO.add(mapToDTOSalesImage(product,images));
         }
         return new PageImpl<>(listDTO,pageable,products.getTotalElements());
     }
@@ -336,15 +350,35 @@ public class ProductService {
 
     }
 
-    public void increaseSell(List<ProductOrderResponseDTO> products){
+    public void editStockAndSell(List<ProductOrderResponseDTO> products){
         for (ProductOrderResponseDTO dto:products) {
             var optional = repository.findById(dto.idProduct());
             if (optional.isPresent()) {
                 var product = optional.get();
                 var newQuantity = product.getQuantitySells() + dto.quantity();
                 product.setQuantitySells(newQuantity);
+
+                var newStock = product.getStock() - dto.quantity();
+                product.setStock(newStock);
+
                 repository.save(product);
             }
+        }
+    }
+
+    public void decreaseStock(List<ProductStockRequestDTO> products) throws NotFoundException, BadRequestException {
+        for (ProductStockRequestDTO dto:products) {
+            var optional = repository.findById(dto.idProduct());
+            if (optional.isEmpty()) {
+                throw new NotFoundException("No hay un registro en la tabla Producto con el id: " + dto.idProduct());
+            }
+            var product = optional.get();
+            if (product.getStock() < dto.stock()){
+                throw new BadRequestException("La cantidad supera el stock disponible");
+            }
+            var newStock = product.getStock() - dto.stock();
+            product.setStock(newStock);
+            repository.save(product);
         }
     }
 
@@ -384,6 +418,18 @@ public class ProductService {
         );
     }
 
+    private ProductSalesImageDTO mapToDTOSalesImage(Product product,List<ImageDTO> images){
+        Set<ImageDTO> listDto = new HashSet<>();
+        for (ImageDTO image: images) {
+            listDto.add(new ImageDTO(image.id(), image.name(), image.url(), product.getId()));
+        }
+        return new ProductSalesImageDTO(
+                product.getId(), product.getTitle(), product.getPrice(),product.getDescription(),
+                product.getStock(), product.getQuantitySells(),
+                listDto,product.getSubcategory().getName(),
+                product.getSubcategory().getCategory().getName(),product.getBrand().getName()
+        );
+    }
     private ProductResponseDTO mapToDTO(Product product,List<ImageDTO> images){
         Set<ImageDTO> listDto = new HashSet<>();
         for (ImageDTO image: images) {
@@ -391,8 +437,9 @@ public class ProductService {
         }
         return new ProductResponseDTO(
                 product.getId(), product.getTitle(), product.getPrice(),
-                product.getDescription(),listDto,product.getSubcategory().getName(),
+                product.getDescription(), product.getStock(), listDto,product.getSubcategory().getName(),
                 product.getSubcategory().getCategory().getName(),product.getBrand().getName()
         );
     }
+
 }

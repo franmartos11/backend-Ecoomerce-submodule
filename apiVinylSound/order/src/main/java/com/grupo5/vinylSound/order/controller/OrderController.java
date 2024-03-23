@@ -48,7 +48,8 @@ public class OrderController {
 
     @Transactional
     @PutMapping("/user/order/successful={id}")
-    public ResponseEntity<String> successful(@PathVariable Long id) throws NotFoundException, MessagingException {
+    public ResponseEntity<String> successful(@PathVariable Long id)
+            throws NotFoundException, MessagingException, BadRequestException {
         service.successful(id);
         return new ResponseEntity<>("Se realizó correctamente el pago del pedido  " + id,HttpStatus.OK);
     }

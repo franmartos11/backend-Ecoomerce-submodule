@@ -30,6 +30,9 @@ public class Product {
     @Column(nullable = false)
     private String description;
 
+    @Column(nullable = false)
+    private Integer stock;
+
     @Column(nullable = false,name = "quantity_sells")
     private Integer quantitySells;
 

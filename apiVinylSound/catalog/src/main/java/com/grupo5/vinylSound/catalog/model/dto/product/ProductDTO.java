@@ -4,6 +4,6 @@ import com.grupo5.vinylSound.catalog.model.dto.image.ImageProductDTO;
 
 import java.util.List;
 
-public record ProductDTO(Long id, String title, Float price, String description,
+public record ProductDTO(Long id, String title, Float price, String description,Integer stock,
                          Long idSubcategory, Long idBrand, List<ImageProductDTO> images) {
 }

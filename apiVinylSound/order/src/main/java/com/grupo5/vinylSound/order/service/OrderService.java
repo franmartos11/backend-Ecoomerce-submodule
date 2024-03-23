@@ -10,6 +10,7 @@ import com.grupo5.vinylSound.order.model.dto.order.ProductOrderRequestDTO;
 import com.grupo5.vinylSound.order.model.dto.order.ProductOrderResponseDTO;
 import com.grupo5.vinylSound.order.model.dto.payment.PaymentDTO;
 import com.grupo5.vinylSound.order.model.dto.payment.PaymentProductDTO;
+import com.grupo5.vinylSound.order.model.dto.product.ProductStockRequestDTO;
 import com.grupo5.vinylSound.order.repository.*;
 import com.grupo5.vinylSound.order.repository.feign.CatalogClientFeign;
 import com.grupo5.vinylSound.order.repository.feign.PaymentClientFeign;
@@ -53,7 +54,11 @@ public class OrderService {
             try{
                 var response = catalogClientFeign.findById(productDTO.idProduct());
                 var product = response.getBody();
+
                 assert product != null;
+                if(product.stock() < productDTO.quantity()){
+                    throw new BadRequestException("La cantidad es mayor que el stock");
+                }
                 if (product.images().stream().findFirst().isPresent()) {
                     var image = product.images().stream().findFirst().get();
                     productsPayment.add(new PaymentProductDTO(product.id().toString(), product.title(), product.description(),
@@ -65,7 +70,7 @@ public class OrderService {
                             productDTO.quantity(), product.price().doubleValue()));
                 }
             }catch (Exception e){
-                throw new BadRequestException("No existe un producto con el id: " + productDTO.idProduct());
+                throw new BadRequestException(e.getMessage());
             }
         }
 
@@ -74,7 +79,6 @@ public class OrderService {
         for (ProductOrderRequestDTO product: dto.products()) {
             orderProductRepository.save(mapToOrderProduct(order.getId(),product.idProduct(),product.quantity()));
         }
-
 
         return paymentClientFeign.pay(new PaymentDTO(productsPayment));
     }
@@ -130,7 +134,7 @@ public class OrderService {
         return new PageImpl<>(slice,new PageRequestDTO().getPageable(pageRequestDTO),listDTO.size());
     }
 
-    public void successful(Long id) throws NotFoundException, MessagingException {
+    public void successful(Long id) throws NotFoundException, MessagingException, BadRequestException {
         var optionalOrder = repository.findById(id);
 
         if (optionalOrder.isEmpty()){
@@ -141,7 +145,9 @@ public class OrderService {
         order.setStatusPayment(StatusPayment.SUCCESSFUL);
         repository.save(order);
         var dto = mapToOrderDTO(order);
+
         eventProducer.increaseQuantitySales(dto.products());
+
         emailService.sendEmailToUserOrder(order,order.getOrderProducts());
         emailService.sendEmailToAdminOrder(order,order.getOrderProducts());
     }
@@ -205,5 +211,13 @@ public class OrderService {
                     orderProduct.getQuantity(), orderProduct.getSubtotal()));
         }
         return new OrderResponseDTO(order.getId(),order.getIdUser(),products,order.getTotal(), order.getStatusPayment());
+    }
+
+    private List<ProductStockRequestDTO> mapProductToStockDTO(List<ProductOrderResponseDTO> productsOrder) {
+        List<ProductStockRequestDTO> products = new ArrayList<>();
+        for(ProductOrderResponseDTO orderProduct:productsOrder) {
+            products.add(new ProductStockRequestDTO(orderProduct.idProduct(),orderProduct.quantity()));
+        }
+        return products;
     }
 }
