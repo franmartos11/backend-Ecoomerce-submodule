@@ -37,9 +37,15 @@ public class CartService {
         }
 
         try{
-            catalogClientFeign.findById(dto.idProduct());
+            var response = catalogClientFeign.findById(dto.idProduct());
+            if (!response.getStatusCode().isError()){
+                if (dto.quantity() > Objects.requireNonNull(response.getBody()).stock()){
+                    throw new BadRequestException("La cantidad es mayor que el stock");
+                }
+            }
+
         }catch (Exception e){
-            throw new BadRequestException("No existe un producto con el id: " + dto.idProduct());
+            throw new BadRequestException(e.getMessage());
         }
 
         var optional = repository.findByIdUser(dto.idUser());

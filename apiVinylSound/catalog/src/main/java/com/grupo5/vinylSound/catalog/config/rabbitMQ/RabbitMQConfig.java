@@ -21,14 +21,14 @@ public class RabbitMQConfig {
         return new TopicExchange(EXCHANGE_CATALOG);
     }
 
-
     @Bean
     public Queue queueOrder(){return new Queue(QUEUE_ORDER);}
 
     @Bean
-    public Binding declareBindingOrder(){
+    public Binding declareBindingQuantitySell(){
         return BindingBuilder.bind(queueOrder()).to(appExchange()).with(TOPIC_PRODUCT_QUANTITY_SELL);
     }
+
 
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory){

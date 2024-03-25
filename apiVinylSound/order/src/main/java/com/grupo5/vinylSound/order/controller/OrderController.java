@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 
 @RequiredArgsConstructor
@@ -47,7 +48,8 @@ public class OrderController {
 
     @Transactional
     @PutMapping("/user/order/successful={id}")
-    public ResponseEntity<String> successful(@PathVariable Long id) throws NotFoundException {
+    public ResponseEntity<String> successful(@PathVariable Long id)
+            throws NotFoundException, MessagingException, BadRequestException {
         service.successful(id);
         return new ResponseEntity<>("Se realizó correctamente el pago del pedido  " + id,HttpStatus.OK);
     }
