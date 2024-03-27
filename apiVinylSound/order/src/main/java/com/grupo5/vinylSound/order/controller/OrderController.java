@@ -3,6 +3,7 @@ package com.grupo5.vinylSound.order.controller;
 import com.grupo5.vinylSound.order.exception.BadRequestException;
 import com.grupo5.vinylSound.order.exception.NotFoundException;
 import com.grupo5.vinylSound.order.model.PageRequestDTO;
+import com.grupo5.vinylSound.order.model.dto.order.OrderPaymentDTO;
 import com.grupo5.vinylSound.order.model.dto.order.OrderRequestDTO;
 import com.grupo5.vinylSound.order.model.dto.order.OrderResponseDTO;
 import com.grupo5.vinylSound.order.service.OrderService;
@@ -23,9 +24,9 @@ public class OrderController {
     private final OrderService service;
 
     @PostMapping("/user/order/create")
-    public ResponseEntity<?> create(@RequestBody OrderRequestDTO dto)
+    public ResponseEntity<OrderPaymentDTO> create(@RequestBody OrderRequestDTO dto)
             throws BadRequestException, NotFoundException {
-        return service.create(dto);
+        return ResponseEntity.ok(service.create(dto));
     }
 
     @GetMapping("/user/order/all")
@@ -49,7 +50,7 @@ public class OrderController {
     @Transactional
     @PutMapping("/user/order/successful={id}")
     public ResponseEntity<String> successful(@PathVariable Long id)
-            throws NotFoundException, MessagingException, BadRequestException {
+            throws NotFoundException, MessagingException {
         service.successful(id);
         return new ResponseEntity<>("Se realizó correctamente el pago del pedido  " + id,HttpStatus.OK);
     }

@@ -4,13 +4,9 @@ import com.grupo5.vinylSound.order.event.OrderEventProducer;
 import com.grupo5.vinylSound.order.exception.BadRequestException;
 import com.grupo5.vinylSound.order.exception.NotFoundException;
 import com.grupo5.vinylSound.order.model.*;
-import com.grupo5.vinylSound.order.model.dto.order.OrderRequestDTO;
-import com.grupo5.vinylSound.order.model.dto.order.OrderResponseDTO;
-import com.grupo5.vinylSound.order.model.dto.order.ProductOrderRequestDTO;
-import com.grupo5.vinylSound.order.model.dto.order.ProductOrderResponseDTO;
+import com.grupo5.vinylSound.order.model.dto.order.*;
 import com.grupo5.vinylSound.order.model.dto.payment.PaymentDTO;
 import com.grupo5.vinylSound.order.model.dto.payment.PaymentProductDTO;
-import com.grupo5.vinylSound.order.model.dto.product.ProductStockRequestDTO;
 import com.grupo5.vinylSound.order.repository.*;
 import com.grupo5.vinylSound.order.repository.feign.CatalogClientFeign;
 import com.grupo5.vinylSound.order.repository.feign.PaymentClientFeign;
@@ -21,7 +17,6 @@ import org.springframework.beans.support.PagedListHolder;
 import org.springframework.beans.support.PropertyComparator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
@@ -41,7 +36,7 @@ public class OrderService {
     private final OrderEventProducer eventProducer;
 
 
-    public ResponseEntity<?> create(OrderRequestDTO dto) throws NotFoundException, BadRequestException {
+    public OrderPaymentDTO create(OrderRequestDTO dto) throws NotFoundException, BadRequestException {
         try{
             userClientFeign.findById(dto.idUser());
         }catch (Exception e) {
@@ -75,12 +70,23 @@ public class OrderService {
         }
 
         var order = mapToOrder(dto);
-        repository.save(order);
+        var responseOrder = repository.save(order);
         for (ProductOrderRequestDTO product: dto.products()) {
             orderProductRepository.save(mapToOrderProduct(order.getId(),product.idProduct(),product.quantity()));
         }
 
-        return paymentClientFeign.pay(new PaymentDTO(productsPayment));
+        var responsePayment = paymentClientFeign.pay(new PaymentDTO(productsPayment));
+        if(responsePayment.getStatusCode().is5xxServerError()){
+            throw new BadRequestException("Hubo un error con mercadopago");
+        }
+        var responseBody = Objects.requireNonNull(responsePayment.getBody()).toString();
+
+        int start = responseBody.indexOf("=") + 1;
+        int end = responseBody.lastIndexOf("}");
+
+        var result = responseBody.substring(start, end);
+
+        return new OrderPaymentDTO(responseOrder.getId(), result);
     }
 
     public Page<OrderResponseDTO> getAll(PageRequestDTO pageRequestDTO){
@@ -134,7 +140,7 @@ public class OrderService {
         return new PageImpl<>(slice,new PageRequestDTO().getPageable(pageRequestDTO),listDTO.size());
     }
 
-    public void successful(Long id) throws NotFoundException, MessagingException, BadRequestException {
+    public void successful(Long id) throws NotFoundException, MessagingException {
         var optionalOrder = repository.findById(id);
 
         if (optionalOrder.isEmpty()){
@@ -211,13 +217,5 @@ public class OrderService {
                     orderProduct.getQuantity(), orderProduct.getSubtotal()));
         }
         return new OrderResponseDTO(order.getId(),order.getIdUser(),products,order.getTotal(), order.getStatusPayment());
-    }
-
-    private List<ProductStockRequestDTO> mapProductToStockDTO(List<ProductOrderResponseDTO> productsOrder) {
-        List<ProductStockRequestDTO> products = new ArrayList<>();
-        for(ProductOrderResponseDTO orderProduct:productsOrder) {
-            products.add(new ProductStockRequestDTO(orderProduct.idProduct(),orderProduct.quantity()));
-        }
-        return products;
     }
 }
