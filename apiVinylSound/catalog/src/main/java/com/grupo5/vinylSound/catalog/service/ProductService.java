@@ -397,6 +397,7 @@ public class ProductService {
         product.setId(dto.id());
         product.setTitle(dto.title());
         product.setPrice(dto.price());
+        product.setStock(dto.stock());
         product.setDescription(dto.description());
         product.setQuantitySells(0);
         var subcategory = new SubCategory();
